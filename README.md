@@ -35,7 +35,7 @@ Simple Enemy Mod is an addon for TaCZ that introduces armed NPCs into Minecraft,
 
 This port updates the mod to:
 
-- NeoForge 21.1.x
+- Neoforge
 - Minecraft 1.21.1
 - Java 21
 
