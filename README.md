@@ -5,7 +5,7 @@ This repository contains an **unofficial NeoForge 1.21.1 port** of **Simple Enem
 The original project can be found here:
 https://github.com/NekoYuni/Simple-Enemy-Mod-Public
 
-This port is maintained independently and is **not affiliated with or endorsed by the original author**.
+This port is maintained independently and may present itself with minor bugs and is **not affiliated with or endorsed by the original author**.
 
 All original credit belongs to NekoYuni and contributors.
 
