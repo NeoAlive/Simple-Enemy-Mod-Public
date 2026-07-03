@@ -1,14 +1,14 @@
 package net.nekoyuni.SimpleEnemyMod.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ClientConfig {
 
-    public static final ForgeConfigSpec SPEC;
-    public static ForgeConfigSpec.IntValue RENDER_DISTANCE;
+    public static final ModConfigSpec SPEC;
+    public static ModConfigSpec.IntValue RENDER_DISTANCE;
 
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.push("unit_render_distance");
 

@@ -7,7 +7,7 @@ import net.nekoyuni.SimpleEnemyMod.entity.client.animation.condition.IAnimationC
 import net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.AnimationPriority;
 import net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.IAnimatedEntity;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class ActionLayer extends AbstractAnimationLayer {
 

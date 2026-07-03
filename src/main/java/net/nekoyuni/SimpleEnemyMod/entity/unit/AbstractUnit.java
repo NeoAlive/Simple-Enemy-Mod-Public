@@ -27,7 +27,7 @@ import net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.LayeredAnimation
 import net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.util.StrategyType;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnimatedEntity {
 
@@ -94,11 +94,11 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_VARIANT_ID, 0);
-        this.entityData.define(BACK_DEATH, false);
-        this.entityData.define(DAMAGE_ANIMATION_TICKS, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_VARIANT_ID, 0);
+        builder.define(BACK_DEATH, false);
+        builder.define(DAMAGE_ANIMATION_TICKS, 0);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -113,10 +113,9 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
     @Override
     @SuppressWarnings("deprecation")
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty,
-                                        MobSpawnType reason, @Nullable SpawnGroupData spawnData,
-                                        @Nullable CompoundTag dataTag) {
+                                        MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
 
-        if(!this.level().isClientSide) {
+        if (!this.level().isClientSide) {
             double health = CommonConfig.UNIT_HEALTH.get();
             double speed = CommonConfig.UNIT_SPEED.get();
             double range = CommonConfig.UNIT_DETECTION_RANGE.get();
@@ -126,18 +125,13 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
 
             this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(speed);
             this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(range);
-
-
         }
 
         this.setupRoleGoals();
         this.setPersistenceRequired();
+        this.equipRandomGun();
 
-        if (dataTag == null) {
-            this.equipRandomGun();
-        }
-
-        return super.finalizeSpawn(world, difficulty, reason, spawnData, dataTag);
+        return super.finalizeSpawn(world, difficulty, reason, spawnData);
     }
 
     @Override

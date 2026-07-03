@@ -29,7 +29,7 @@ import java.util.List;
 public class PmcUnitRenderer extends MobRenderer<PmcUnitEntity, PmcUnitModel<PmcUnitEntity>> {
 
     private static ResourceLocation[] PMCUNIT_TEXTURES = new ResourceLocation[]{
-            new ResourceLocation("simpleenemymod", "textures/entity/pmc_unit/pmc_unit_default.png")
+            ResourceLocation.fromNamespaceAndPath("simpleenemymod", "textures/entity/pmc_unit/pmc_unit_default.png")
     };
 
     public PmcUnitRenderer(EntityRendererProvider.Context context) {
@@ -81,7 +81,7 @@ public class PmcUnitRenderer extends MobRenderer<PmcUnitEntity, PmcUnitModel<Pmc
 
     @Override
     protected void setupRotations(PmcUnitEntity pEntity, PoseStack pPoseStack,
-                                  float pAgeInTicks, float pBodyYRot, float pPartialTicks) {
+                                  float pAgeInTicks, float pBodyYRot, float pPartialTicks, float scale) {
 
         if (pEntity.deathAnimationState.isStarted()) {
 
@@ -108,7 +108,7 @@ public class PmcUnitRenderer extends MobRenderer<PmcUnitEntity, PmcUnitModel<Pmc
             return;
         }
 
-        super.setupRotations(pEntity, pPoseStack, pAgeInTicks, pBodyYRot, pPartialTicks);
+        super.setupRotations(pEntity, pPoseStack, pAgeInTicks, pBodyYRot, pPartialTicks, scale);
     }
 
     @Override

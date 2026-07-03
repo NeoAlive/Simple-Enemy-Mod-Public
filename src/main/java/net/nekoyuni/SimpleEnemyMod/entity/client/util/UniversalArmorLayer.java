@@ -15,9 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.DyeableArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.core.component.DataComponents;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.nekoyuni.SimpleEnemyMod.compat.geckolib.GeckoCompat;
 import net.nekoyuni.SimpleEnemyMod.compat.geckolib.GeckoCompatClient;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
@@ -122,7 +124,8 @@ public class UniversalArmorLayer<T extends AbstractUnit, M extends EntityModel<T
         applyManualPosition(armorModel, slot);
 
         boolean hasGlint = itemStack.hasFoil();
-        boolean isDyeable = itemStack.getItem() instanceof DyeableArmorItem;
+        DyedItemColor dyedColor = itemStack.get(DataComponents.DYED_COLOR);
+        boolean isDyeable = dyedColor != null;
         ResourceLocation texture = getArmorTexture(entity, itemStack, slot, armorItem);
 
         if (texture == null) return;
@@ -246,44 +249,19 @@ public class UniversalArmorLayer<T extends AbstractUnit, M extends EntityModel<T
     @SuppressWarnings("unchecked")
     private HumanoidModel<LivingEntity> getArmorModel(T entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<LivingEntity> defaultModel) {
 
-        var model = ForgeHooksClient.getArmorModel(entity, stack, slot, defaultModel);
+        var model = ClientHooks.getArmorModel(entity, stack, slot, defaultModel);
 
         return model instanceof HumanoidModel ? (HumanoidModel<LivingEntity>) model : null;
     }
 
     private ResourceLocation getArmorTexture(T entity, ItemStack stack, EquipmentSlot slot, ArmorItem armorItem) {
-
-        String baseTexture = armorItem.getArmorTexture(stack, entity, slot, null);
-        String texture = ForgeHooksClient.getArmorTexture(entity, stack, baseTexture, slot, null);
-
-        if (texture != null) {
-            return new ResourceLocation(texture);
-        }
-
-        String material = armorItem.getMaterial().getName();
-        String domain = "minecraft";
-        String path = material;
-
-        if (material.contains(":")) {
-            String[] split = material.split(":");
-            domain = split[0];
-            path = split[1];
-        }
-
-        String layer = (slot == EquipmentSlot.LEGS) ? "layer_2" : "layer_1";
-
-        return new ResourceLocation(domain, "textures/models/armor/" + path + "_" + layer + ".png");
+        boolean inner = slot == EquipmentSlot.LEGS;
+        ArmorMaterial.Layer layer = armorItem.getMaterial().value().layers().getFirst();
+        return ClientHooks.getArmorTexture(entity, stack, layer, inner, slot);
     }
 
     private ResourceLocation getArmorOverlayTexture(T entity, ItemStack stack, EquipmentSlot slot, ArmorItem armorItem) {
-
-        String texture = ForgeHooksClient.getArmorTexture(
-                entity,
-                stack,
-                armorItem.getArmorTexture(stack, entity, slot, "overlay"), slot, "overlay"
-        );
-
-        return texture != null ? new ResourceLocation(texture) : null;
+        return null;
     }
 
     private void renderArmorModel(PoseStack poseStack, MultiBufferSource buffer, int packedLight, boolean hasGlint,
@@ -292,18 +270,18 @@ public class UniversalArmorLayer<T extends AbstractUnit, M extends EntityModel<T
         VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(
                 buffer,
                 RenderType.armorCutoutNoCull(texture),
-                false, hasGlint
+                hasGlint
         );
 
         float r = 1.0F, g = 1.0F, b = 1.0F;
+        int tint = -1;
 
-        if (isDyeable && stack.getItem() instanceof DyeableArmorItem dyeable) {
-            int color = dyeable.getColor(stack);
-            r = ((color >> 16) & 255) / 255.0F;
-            g = ((color >> 8) & 255) / 255.0F;
-            b = (color & 255) / 255.0F;
+        DyedItemColor dyed = stack.get(DataComponents.DYED_COLOR);
+        if (isDyeable && dyed != null) {
+            tint = dyed.rgb();
         }
-        model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, r, g, b, 1.0F);
+
+        model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, tint);
     }
 }
 

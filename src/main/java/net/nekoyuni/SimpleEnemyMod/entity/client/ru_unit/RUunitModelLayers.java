@@ -6,5 +6,5 @@ import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 
 public class RUunitModelLayers {
     public static final ModelLayerLocation RUUNIT_LAYER = new ModelLayerLocation(
-            new ResourceLocation(SimpleEnemyMod.MODID, "ruunit_layer"), "main");
+            ResourceLocation.fromNamespaceAndPath(SimpleEnemyMod.MODID, "ruunit_layer"), "main");
 }

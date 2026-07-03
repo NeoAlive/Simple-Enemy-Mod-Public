@@ -1,9 +1,11 @@
 package net.nekoyuni.SimpleEnemyMod.world.data;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -11,6 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EventProbabilityData extends SavedData {
+
+    private static final SavedData.Factory<EventProbabilityData> FACTORY = new SavedData.Factory<>(
+            EventProbabilityData::new,
+            EventProbabilityData::load,
+            DataFixTypes.LEVEL
+    );
 
     private final Map<String, Double> currentChances = new HashMap<>();
     private final Map<String, Boolean> eventActiveStates = new HashMap<>();
@@ -50,7 +58,7 @@ public class EventProbabilityData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         ListTag chanceList = new ListTag();
         currentChances.forEach((id, chance) -> {
             CompoundTag entry = new CompoundTag();
@@ -72,7 +80,7 @@ public class EventProbabilityData extends SavedData {
         return tag;
     }
 
-    public static EventProbabilityData load(CompoundTag tag) {
+    public static EventProbabilityData load(CompoundTag tag, HolderLookup.Provider provider) {
         EventProbabilityData data = new EventProbabilityData();
 
         if (tag.contains("EventChances")) {
@@ -102,10 +110,6 @@ public class EventProbabilityData extends SavedData {
     public static EventProbabilityData get(ServerLevel level) {
         ServerLevel overworld = level.getServer().getLevel(Level.OVERWORLD);
 
-        return overworld.getDataStorage().computeIfAbsent(
-                EventProbabilityData::load,
-                EventProbabilityData::new,
-                "sem_event_data"
-        );
+        return overworld.getDataStorage().computeIfAbsent(FACTORY, "sem_event_data");
     }
 }

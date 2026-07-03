@@ -9,15 +9,16 @@ import com.tacz.guns.api.item.gun.FireMode;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
 
-@Mod.EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class UnitDropsHandler {
 
     @SubscribeEvent
@@ -27,6 +28,7 @@ public class UnitDropsHandler {
 
         if (!(event.getEntity() instanceof AbstractUnit unit)) return;
 
+        var provider = unit.level().registryAccess();
         ItemStack sourceGun = findGunStack(unit);
 
         if (sourceGun.isEmpty()) return;
@@ -60,14 +62,14 @@ public class UnitDropsHandler {
                     .setAmmoCount(partialAmmo)
                     .setFireMode(fireMode)
                     .setCount(1)
-                    .build();
+                    .build(provider);
 
             IGun iCleanGun = IGun.getIGunOrNull(cleanGun);
             if (iCleanGun != null) {
                 for (AttachmentType type : AttachmentType.values()) {
-                    ItemStack attachment = iGun.getAttachment(sourceGun, type);
+                    ItemStack attachment = iGun.getAttachment(provider, sourceGun, type);
                     if (!attachment.isEmpty()) {
-                        iCleanGun.installAttachment(cleanGun, attachment.copy());
+                        iCleanGun.installAttachment(provider, cleanGun, attachment.copy());
                     }
                 }
             }
@@ -96,17 +98,12 @@ public class UnitDropsHandler {
 
 
     private static ItemStack findGunStack(AbstractUnit unit) {
-
-        ItemStack[] result = { ItemStack.EMPTY };
-
-        unit.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-            ItemStack stack = handler.getStackInSlot(0);
+        if (unit instanceof PmcUnitEntity pmcUnit) {
+            ItemStack stack = pmcUnit.getInventory().getStackInSlot(0);
             if (IGun.getIGunOrNull(stack) != null) {
-                result[0] = stack;
+                return stack;
             }
-        });
-
-        if (!result[0].isEmpty()) return result[0];
+        }
 
         ItemStack mainHand = unit.getMainHandItem();
         if (IGun.getIGunOrNull(mainHand) != null) {

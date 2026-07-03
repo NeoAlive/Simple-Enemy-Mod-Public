@@ -5,8 +5,9 @@ import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.RangedGunAttackGoal;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import static com.mojang.text2speech.Narrator.LOGGER;
 
 
-@Mod.EventBusSubscriber(modid = SimpleEnemyMod.MODID)
+@EventBusSubscriber(modid = SimpleEnemyMod.MODID)
 public class FriendlyFireEventHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FriendlyFireEventHandler.class);

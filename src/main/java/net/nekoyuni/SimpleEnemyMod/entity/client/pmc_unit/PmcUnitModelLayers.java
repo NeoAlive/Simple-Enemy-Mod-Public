@@ -6,5 +6,5 @@ import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 
 public class PmcUnitModelLayers {
     public static final ModelLayerLocation PMCUNIT_LAYER = new ModelLayerLocation(
-            new ResourceLocation(SimpleEnemyMod.MODID, "pmcunit_layer"), "main");
+            ResourceLocation.fromNamespaceAndPath(SimpleEnemyMod.MODID, "pmcunit_layer"), "main");
 }

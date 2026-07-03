@@ -6,14 +6,15 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.data.UnitLoadout;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = "simpleenemymod", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = "simpleenemymod", bus = EventBusSubscriber.Bus.GAME)
 public class UnitLoadoutManager extends SimpleJsonResourceReloadListener {
 
     private static final Gson GSON = (new GsonBuilder()).create();
@@ -64,21 +65,21 @@ public class UnitLoadoutManager extends SimpleJsonResourceReloadListener {
                             return;
                         }
 
-                        ResourceLocation gunId = new ResourceLocation(loadoutJson.get("gun_id").getAsString());
+                        ResourceLocation gunId = ResourceLocation.parse(loadoutJson.get("gun_id").getAsString());
                         int ammoCount = loadoutJson.get("ammo_count").getAsInt();
                         String fireMode = loadoutJson.get("fire_mode").getAsString();
 
                         ResourceLocation scopeId =
                                 loadoutJson.has("scope_id") ?
-                                        new ResourceLocation(loadoutJson.get("scope_id").getAsString()) : null;
+                                        ResourceLocation.parse(loadoutJson.get("scope_id").getAsString()) : null;
 
                         ResourceLocation muzzleId
                                 = loadoutJson.has("muzzle_id") ?
-                                new ResourceLocation(loadoutJson.get("muzzle_id").getAsString()) : null;
+                                ResourceLocation.parse(loadoutJson.get("muzzle_id").getAsString()) : null;
 
                         ResourceLocation gripId =
                                 loadoutJson.has("grip_id") ?
-                                        new ResourceLocation(loadoutJson.get("grip_id").getAsString()) : null;
+                                        ResourceLocation.parse(loadoutJson.get("grip_id").getAsString()) : null;
 
                         UnitLoadout loadout = new UnitLoadout(gunId, ammoCount, fireMode, scopeId, muzzleId, gripId);
 

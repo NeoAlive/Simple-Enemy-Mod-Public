@@ -44,9 +44,12 @@
 
 ![image](https://media.forgecdn.net/attachments/description/null/description_d4b741ad-f194-4766-be08-f870a9795eab.png)
 
-*   **Minecraft Forge:** 47.4.0+
-*   **Dependency:** TaCZ 1.1.7
-*   **Recommended:** Cloth Config 11.1.136
+*   **NeoForge:** 21.1.x (Minecraft 1.21.1, Java 21)
+*   **Required dependency:** [TaCZ 1.21.1 NeoForge port](https://www.curseforge.com/minecraft/mc-mods/timeless-and-classics-zero/files) (unofficial 1.21.1 build)
+*   **TaCZ gun packs:** Existing 1.20.1 gun packs must be upgraded with the [TaCZ Pack Upgrader](https://modrinth.com/mod/tacz-pack-upgrader) before use on 1.21.1
+*   **Recommended:** Cloth Config 15.x (NeoForge), GeckoLib 4.8.x, Curios 9.5.x
+
+> **Note:** This version targets NeoForge 1.21.1 only. Worlds from the Forge 1.20.1 release are not compatible; start a fresh world.
 
 ***
 
@@ -76,7 +79,7 @@ Soldiers who, for a couple of emeralds, will help you forge the resistance.
 *   Perfectly integrated for survival mode
 *   Customizable inventories
 *   Support for most TaCZ weapons
-*   Support for Vanilla, Forge, and Gecko 4.4.6 armors
+*   Support for Vanilla, NeoForge, and GeckoLib 4.8.x armors
 
 ### Commander Menu
 
@@ -126,7 +129,7 @@ Find the config file here:
 
 ### Custom Textures
 
-Don't like the soldier skins? That's not a problem! Simple Enemy Mod uses the standard Forge resource path. You can create your own texture pack for the soldiers.
+Don't like the soldier skins? That's not a problem! Simple Enemy Mod uses the standard resource pack path. You can create your own texture pack for the soldiers.
 
 Make sure to follow this folder path in your Zip file: `assets/simpleenemymod/textures/entity/[type of Unit]/texture.png`
 

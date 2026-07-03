@@ -16,7 +16,7 @@ import net.nekoyuni.SimpleEnemyMod.inventory.PmcUnitMenu;
 public class PmcUnitScreen extends AbstractContainerScreen<PmcUnitMenu> {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(SimpleEnemyMod.MODID, "textures/gui/pmc_unit_gui.png");
+            ResourceLocation.fromNamespaceAndPath(SimpleEnemyMod.MODID, "textures/gui/pmc_unit_gui.png");
 
     public PmcUnitScreen(PmcUnitMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -29,7 +29,7 @@ public class PmcUnitScreen extends AbstractContainerScreen<PmcUnitMenu> {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
@@ -48,11 +48,16 @@ public class PmcUnitScreen extends AbstractContainerScreen<PmcUnitMenu> {
             CuriosHelper.renderCuriosOverlay(guiGraphics, x, y);
         }
 
+        int entityX1 = x + 26;
+        int entityY1 = y + 8;
+        int entityX2 = x + 75;
+        int entityY2 = y + 78;
+
         InventoryScreen.renderEntityInInventoryFollowsMouse(
                 guiGraphics,
-                x + 53, y + 85, 30,
-                (float)(x + 62) - mouseX,
-                (float)(y + 35) - mouseY,
+                entityX1, entityY1, entityX2, entityY2, 30, 0.0625F,
+                (float) entityX2 - mouseX,
+                (float) entityY2 - mouseY,
                 this.menu.unit
         );
 

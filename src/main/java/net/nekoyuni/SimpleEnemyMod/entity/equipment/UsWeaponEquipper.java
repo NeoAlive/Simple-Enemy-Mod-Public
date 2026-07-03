@@ -3,6 +3,7 @@ package net.nekoyuni.SimpleEnemyMod.entity.equipment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,8 +16,8 @@ import static net.nekoyuni.SimpleEnemyMod.entity.equipment.PmcUnitWeaponEquipper
 public class UsWeaponEquipper {
 
     public static void equipRandomGun(LivingEntity entity, RandomSource random) {
-
         final String FACTION_ID = "us_units";
+        HolderLookup.Provider provider = entity.level().registryAccess();
 
         UnitLoadout selectedLoadout;
         try {
@@ -26,13 +27,12 @@ public class UsWeaponEquipper {
             return;
         }
 
-        // Gun Creation and Setup
         ItemStack gunStack = GunItemBuilder.create()
                 .setId(selectedLoadout.gunId)
                 .setAmmoCount(selectedLoadout.ammoCount)
                 .setFireMode(getJsonFireMode(selectedLoadout.fireMode))
                 .setCount(1)
-                .build();
+                .build(provider);
 
         IGun iGun = IGun.getIGunOrNull(gunStack);
         if (iGun == null) {
@@ -40,22 +40,19 @@ public class UsWeaponEquipper {
             return;
         }
 
-        // Scope
         selectedLoadout.scopeId.ifPresent(scopeId -> {
             ItemStack scopeStack = AttachmentItemBuilder.create().setId(scopeId).build();
-            iGun.installAttachment(gunStack, scopeStack);
+            iGun.installAttachment(provider, gunStack, scopeStack);
         });
 
-        // Muzzle
         selectedLoadout.muzzleId.ifPresent(muzzleId -> {
             ItemStack muzzleStack = AttachmentItemBuilder.create().setId(muzzleId).build();
-            iGun.installAttachment(gunStack, muzzleStack);
+            iGun.installAttachment(provider, gunStack, muzzleStack);
         });
 
-        // Grip
         selectedLoadout.gripId.ifPresent(gripId -> {
             ItemStack gripStack = AttachmentItemBuilder.create().setId(gripId).build();
-            iGun.installAttachment(gunStack, gripStack);
+            iGun.installAttachment(provider, gunStack, gripStack);
         });
 
         iGun.setMaxDummyAmmoAmount(gunStack, Integer.MAX_VALUE);
@@ -63,5 +60,4 @@ public class UsWeaponEquipper {
 
         entity.setItemInHand(InteractionHand.MAIN_HAND, gunStack);
     }
-
 }

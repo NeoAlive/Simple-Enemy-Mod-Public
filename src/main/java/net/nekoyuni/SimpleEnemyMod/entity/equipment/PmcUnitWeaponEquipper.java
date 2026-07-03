@@ -6,20 +6,21 @@ import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
 import com.tacz.guns.api.item.gun.FireMode;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.nekoyuni.SimpleEnemyMod.data.UnitLoadout;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
 import net.nekoyuni.SimpleEnemyMod.event.common.UnitLoadoutManager;
 
 public class PmcUnitWeaponEquipper {
 
     public static void equipRandomGun(LivingEntity entity, RandomSource random) {
-
         final String FACTION_ID = "pmc_units";
+        HolderLookup.Provider provider = entity.level().registryAccess();
 
         UnitLoadout selectedLoadout;
         try {
@@ -34,7 +35,7 @@ public class PmcUnitWeaponEquipper {
                 .setAmmoCount(selectedLoadout.ammoCount)
                 .setFireMode(getJsonFireMode(selectedLoadout.fireMode))
                 .setCount(1)
-                .build();
+                .build(provider);
 
         IGun iGun = IGun.getIGunOrNull(gunStack);
         if (iGun == null) {
@@ -42,60 +43,52 @@ public class PmcUnitWeaponEquipper {
             return;
         }
 
-        // Scope
         selectedLoadout.scopeId.ifPresent(scopeId -> {
             ItemStack scopeStack = AttachmentItemBuilder.create().setId(scopeId).build();
-            iGun.installAttachment(gunStack, scopeStack);
+            iGun.installAttachment(provider, gunStack, scopeStack);
         });
 
-        // Muzzle
         selectedLoadout.muzzleId.ifPresent(muzzleId -> {
             ItemStack muzzleStack = AttachmentItemBuilder.create().setId(muzzleId).build();
-            iGun.installAttachment(gunStack, muzzleStack);
+            iGun.installAttachment(provider, gunStack, muzzleStack);
         });
 
-        // Grip
         selectedLoadout.gripId.ifPresent(gripId -> {
             ItemStack gripStack = AttachmentItemBuilder.create().setId(gripId).build();
-            iGun.installAttachment(gunStack, gripStack);
+            iGun.installAttachment(provider, gunStack, gripStack);
         });
 
-        // iGun.setMaxDummyAmmoAmount(gunStack, Integer.MAX_VALUE);
-        // iGun.setDummyAmmoAmount(gunStack, 9999);
+        if (!(entity instanceof PmcUnitEntity pmcUnit)) {
+            return;
+        }
 
+        IItemHandlerModifiable modifiable = pmcUnit.getInventory();
+        modifiable.setStackInSlot(0, gunStack);
 
-        entity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-            if (!(handler instanceof IItemHandlerModifiable modifiable)) return;
+        ResourceLocation ammoId = TimelessAPI.getCommonGunIndex(selectedLoadout.gunId)
+                .map(index -> index.getGunData().getAmmoId())
+                .orElse(null);
 
-            modifiable.setStackInSlot(0, gunStack);
+        if (ammoId != null) {
+            int reserveAmmo = selectedLoadout.ammoCount * 6;
+            ItemStack ammoStack = AmmoItemBuilder.create()
+                    .setId(ammoId)
+                    .setCount(reserveAmmo)
+                    .build();
 
-            ResourceLocation ammoId = TimelessAPI.getCommonGunIndex(selectedLoadout.gunId)
-                    .map(index -> index.getGunData().getAmmoId())
-                    .orElse(null);
-
-            if (ammoId != null) {
-                int reserveAmmo = selectedLoadout.ammoCount * 6;
-                ItemStack ammoStack = AmmoItemBuilder.create()
-                        .setId(ammoId)
-                        .setCount(reserveAmmo)
-                        .build();
-
-                for (int slot = 1; slot < modifiable.getSlots(); slot++) {
-                    if (modifiable.getStackInSlot(slot).isEmpty()) {
-                        modifiable.setStackInSlot(slot, ammoStack);
-                        break;
-                    }
+            for (int slot = 1; slot < modifiable.getSlots(); slot++) {
+                if (modifiable.getStackInSlot(slot).isEmpty()) {
+                    modifiable.setStackInSlot(slot, ammoStack);
+                    break;
                 }
             }
-        });
+        }
     }
 
     protected static FireMode getJsonFireMode(String fireModeStr) {
-
         if ("AUTO".equalsIgnoreCase(fireModeStr)) {
             return FireMode.AUTO;
         }
         return FireMode.SEMI;
     }
-
 }

@@ -1,20 +1,16 @@
 package net.nekoyuni.SimpleEnemyMod.client.system;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
-@Mod.EventBusSubscriber(modid = "simpleenemymod", value = Dist.CLIENT)
+@EventBusSubscriber(modid = "simpleenemymod", value = Dist.CLIENT)
 public class SuppressionManager {
 
     public static float suppressionLevel = 0.0f;
     private static final float DECAY_RATE = 0.0025f;
 
-    /**
-     * Calls this method when a bullet passes close or hits close.
-     * @param amount How much stress to add (e.g., 0.1f for a minor scare, 0.4f for a major scare)
-     */
     public static void addSuppression(float amount) {
         suppressionLevel += amount;
 
@@ -23,18 +19,13 @@ public class SuppressionManager {
         }
     }
 
-
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (suppressionLevel > 0) {
+            suppressionLevel -= DECAY_RATE;
 
-            if (suppressionLevel > 0) {
-                suppressionLevel -= DECAY_RATE;
-
-                if (suppressionLevel < 0) {
-                    suppressionLevel = 0.0f;
-                }
-
+            if (suppressionLevel < 0) {
+                suppressionLevel = 0.0f;
             }
         }
     }

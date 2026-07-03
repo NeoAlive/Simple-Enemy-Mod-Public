@@ -1,40 +1,29 @@
 package net.nekoyuni.SimpleEnemyMod.network.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 import net.nekoyuni.SimpleEnemyMod.network.ClientPacketHandler;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record PacketSuppression(float amount) implements CustomPacketPayload {
 
-public class PacketSuppression {
-    private final float amount;
+    public static final CustomPacketPayload.Type<PacketSuppression> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(SimpleEnemyMod.MODID, "suppression"));
 
-    public PacketSuppression(float amount) {
-        this.amount = amount;
+    public static final StreamCodec<FriendlyByteBuf, PacketSuppression> STREAM_CODEC = StreamCodec.of(
+            (buf, msg) -> buf.writeFloat(msg.amount),
+            buf -> new PacketSuppression(buf.readFloat())
+    );
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static void encode(PacketSuppression msg, FriendlyByteBuf buf) {
-        buf.writeFloat(msg.amount);
-    }
-
-    public static PacketSuppression decode(FriendlyByteBuf buf) {
-        return new PacketSuppression(buf.readFloat());
-    }
-
-    public static void handle(PacketSuppression msg, Supplier<NetworkEvent.Context> ctx) {
-        NetworkEvent.Context context = ctx.get();
-        context.enqueueWork(() -> {
-            DistExecutor.unsafeRunWhenOn(
-                    Dist.CLIENT,
-                    () -> () -> ClientPacketHandler.handleSuppression(msg)
-            );
-        });
-        context.setPacketHandled(true);
-    }
-
-    public float getAmount() {
-        return amount;
+    public static void handleClient(PacketSuppression msg, IPayloadContext context) {
+        context.enqueueWork(() -> ClientPacketHandler.handleSuppression(msg));
     }
 }

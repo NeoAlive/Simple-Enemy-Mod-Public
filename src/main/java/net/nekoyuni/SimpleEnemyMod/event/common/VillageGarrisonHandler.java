@@ -6,10 +6,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class VillageGarrisonHandler {
 
     private static final List<PendingGarrison> PENDING_GARRISONS = new ArrayList<>();
@@ -61,10 +62,10 @@ public class VillageGarrisonHandler {
     }
 
     @SubscribeEvent
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || event.level.isClientSide) return;
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        if (event.getLevel().isClientSide()) return;
 
-        ServerLevel currentLevel = (ServerLevel) event.level;
+        ServerLevel currentLevel = (ServerLevel) event.getLevel();
 
         Iterator<PendingGarrison> iterator = PENDING_GARRISONS.iterator();
         while (iterator.hasNext()) {
@@ -117,7 +118,7 @@ public class VillageGarrisonHandler {
         AbstractUnit unit = isRu ? new RUunitEntity(ModEntities.RUUNIT.get(), level) : new USunitEntity(ModEntities.USUNIT.get(), level);
         unit.setRole(UnitRole.DEFAULT);
         unit.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
-        unit.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null, null);
+        unit.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null);
         level.addFreshEntity(unit);
     }
 }

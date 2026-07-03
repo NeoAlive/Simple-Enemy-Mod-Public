@@ -97,7 +97,7 @@ public class PatrolEvent extends DynamicEvent {
         }
 
         unit.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
-        unit.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null, null);
+        unit.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null);
 
         level.addFreshEntity(unit);
     }

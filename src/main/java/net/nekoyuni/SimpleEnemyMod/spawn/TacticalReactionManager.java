@@ -1,13 +1,13 @@
 package net.nekoyuni.SimpleEnemyMod.spawn;
 
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class TacticalReactionManager {
 
     private static final Queue<Runnable> pendingReactions = new ConcurrentLinkedQueue<>();
@@ -18,10 +18,8 @@ public class TacticalReactionManager {
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            processQueue();
-        }
+    public static void onServerTick(ServerTickEvent.Post event) {
+        processQueue();
     }
 
     private static void processQueue() {
@@ -32,7 +30,7 @@ public class TacticalReactionManager {
             if (task != null) {
                 try {
                     task.run();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
             processedCount++;

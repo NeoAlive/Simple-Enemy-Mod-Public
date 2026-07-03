@@ -12,7 +12,7 @@ import net.nekoyuni.SimpleEnemyMod.entity.unit.util.StrategyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.EnumSet;
 
 public class TacticalManeuverGoal extends Goal {

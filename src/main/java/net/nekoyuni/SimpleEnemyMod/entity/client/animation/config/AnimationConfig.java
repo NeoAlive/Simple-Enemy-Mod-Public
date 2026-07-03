@@ -12,7 +12,7 @@ import net.nekoyuni.SimpleEnemyMod.entity.client.animation.layer.BaseLocomotionL
 import net.nekoyuni.SimpleEnemyMod.entity.client.animation.layer.DeathLayer;
 import net.nekoyuni.SimpleEnemyMod.entity.client.animation.procedural.IProceduralLayer;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
 public class AnimationConfig {

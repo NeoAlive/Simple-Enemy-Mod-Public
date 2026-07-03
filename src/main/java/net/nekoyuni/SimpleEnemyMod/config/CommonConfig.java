@@ -1,66 +1,67 @@
 package net.nekoyuni.SimpleEnemyMod.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 
-@Mod.EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class CommonConfig {
 
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec SPEC;
 
     // Drops
-    public static final ForgeConfigSpec.BooleanValue ENABLE_CUSTOM_DROPS;
-    public static final ForgeConfigSpec.DoubleValue GUN_DROP_CHANCE;
-    public static final ForgeConfigSpec.DoubleValue AMMO_DROP_CHANCE;
+    public static final ModConfigSpec.BooleanValue ENABLE_CUSTOM_DROPS;
+    public static final ModConfigSpec.DoubleValue GUN_DROP_CHANCE;
+    public static final ModConfigSpec.DoubleValue AMMO_DROP_CHANCE;
 
     // Factions
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RU_UNITS_FRIENDLY;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> US_UNITS_FRIENDLY;
+    public static final ModConfigSpec.ConfigValue<Boolean> RU_UNITS_FRIENDLY;
+    public static final ModConfigSpec.ConfigValue<Boolean> US_UNITS_FRIENDLY;
 
     // Village Garrison
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ENABLE_VILLAGE_GARRISON_CONFIG;
+    public static final ModConfigSpec.ConfigValue<Boolean> ENABLE_VILLAGE_GARRISON_CONFIG;
     public static boolean enableVillageGarrison = true;
 
     // Difficulty
-    public static final ForgeConfigSpec.EnumValue<CommonConfig.AIDifficulty> DIFFICULTY;
+    public static final ModConfigSpec.EnumValue<CommonConfig.AIDifficulty> DIFFICULTY;
     public enum AIDifficulty {
         NORMAL, ADVANCED
     }
 
     // Suppression
-    public static final ForgeConfigSpec.BooleanValue ENABLE_SUPPRESSION;
+    public static final ModConfigSpec.BooleanValue ENABLE_SUPPRESSION;
 
     // Attributes
-    public static ForgeConfigSpec.DoubleValue UNIT_HEALTH;
-    public static ForgeConfigSpec.DoubleValue UNIT_SPEED;
-    public static ForgeConfigSpec.DoubleValue UNIT_DETECTION_RANGE;
+    public static ModConfigSpec.DoubleValue UNIT_HEALTH;
+    public static ModConfigSpec.DoubleValue UNIT_SPEED;
+    public static ModConfigSpec.DoubleValue UNIT_DETECTION_RANGE;
 
     // Shooting
-    public static ForgeConfigSpec.DoubleValue MAX_SHOOT_DISTANCE;
-    public static ForgeConfigSpec.DoubleValue BASE_SPREAD;
-    public static ForgeConfigSpec.DoubleValue SPREAD_INCREASE;
+    public static ModConfigSpec.DoubleValue MAX_SHOOT_DISTANCE;
+    public static ModConfigSpec.DoubleValue BASE_SPREAD;
+    public static ModConfigSpec.DoubleValue SPREAD_INCREASE;
 
-    public static ForgeConfigSpec.IntValue MIN_BURST;
-    public static ForgeConfigSpec.IntValue MAX_BURST;
+    public static ModConfigSpec.IntValue MIN_BURST;
+    public static ModConfigSpec.IntValue MAX_BURST;
 
-    public static ForgeConfigSpec.IntValue MIN_BURST_COOLDOWN;
-    public static ForgeConfigSpec.IntValue MAX_BURST_COOLDOWN;
+    public static ModConfigSpec.IntValue MIN_BURST_COOLDOWN;
+    public static ModConfigSpec.IntValue MAX_BURST_COOLDOWN;
 
     // Procedural Events
-    public static ForgeConfigSpec.DoubleValue PATROL_BASE_CHANCE;
-    public static ForgeConfigSpec.DoubleValue PATROL_FAILURE_MULTIPLIER;
+    public static ModConfigSpec.DoubleValue PATROL_BASE_CHANCE;
+    public static ModConfigSpec.DoubleValue PATROL_FAILURE_MULTIPLIER;
 
-    public static ForgeConfigSpec.DoubleValue COMBAT_BASE_CHANCE;
-    public static ForgeConfigSpec.DoubleValue COMBAT_FAILURE_MULTIPLIER;
+    public static ModConfigSpec.DoubleValue COMBAT_BASE_CHANCE;
+    public static ModConfigSpec.DoubleValue COMBAT_FAILURE_MULTIPLIER;
 
-    public static ForgeConfigSpec.DoubleValue CAVE_BASE_CHANCE;
-    public static ForgeConfigSpec.DoubleValue CAVE_FAILURE_MULTIPLIER;
+    public static ModConfigSpec.DoubleValue CAVE_BASE_CHANCE;
+    public static ModConfigSpec.DoubleValue CAVE_FAILURE_MULTIPLIER;
 
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.push("general_settings");
 

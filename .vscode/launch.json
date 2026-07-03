@@ -1,0 +1,93 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Client",
+      "presentation": {
+        "group": "Mod Development - simpleenemymod",
+        "order": 0
+      },
+      "projectName": "simpleenemymod",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/build/moddev/clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/build/moddev/clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsimpleenemymod%%/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/bin/main"
+      ],
+      "cwd": "${workspaceFolder}/run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Data",
+      "presentation": {
+        "group": "Mod Development - simpleenemymod",
+        "order": 1
+      },
+      "projectName": "simpleenemymod",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/build/moddev/dataRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/build/moddev/dataRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsimpleenemymod%%/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/bin/main"
+      ],
+      "cwd": "${workspaceFolder}/run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "GameTestServer",
+      "presentation": {
+        "group": "Mod Development - simpleenemymod",
+        "order": 2
+      },
+      "projectName": "simpleenemymod",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/build/moddev/gameTestServerRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/build/moddev/gameTestServerRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsimpleenemymod%%/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/bin/main"
+      ],
+      "cwd": "${workspaceFolder}/run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Server",
+      "presentation": {
+        "group": "Mod Development - simpleenemymod",
+        "order": 3
+      },
+      "projectName": "simpleenemymod",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/build/moddev/serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/build/moddev/serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsimpleenemymod%%/home/wittgenstein/Progetti/SimpleEnemyMod/Simple-Enemy-Mod-Public/bin/main"
+      ],
+      "cwd": "${workspaceFolder}/run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    }
+  ]
+}

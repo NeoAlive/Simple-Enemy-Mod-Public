@@ -77,7 +77,7 @@ public class CombatEvent extends DynamicEvent {
             spawnUnit(level, posUs, false);
         }
 
-        level.playSound(null, centerPos, SoundEvents.GENERIC_EXPLODE, SoundSource.AMBIENT, 2.0F, 0.8F);
+        level.playSound(null, centerPos, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.AMBIENT, 2.0F, 0.8F);
 
         return true;
     }
@@ -99,7 +99,7 @@ public class CombatEvent extends DynamicEvent {
         unit.setRole(UnitRole.DEFAULT);
         unit.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 
-        unit.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null, null);
+        unit.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null);
 
         level.addFreshEntity(unit);
     }

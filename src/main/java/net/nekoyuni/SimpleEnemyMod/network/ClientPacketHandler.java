@@ -20,13 +20,12 @@ public class ClientPacketHandler {
     public static void handleImpactSound(PacketPlayImpactSound msg) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) {
-            System.out.println("\u001B[33m[SoundDebug] Client not ready to reproduce\u001B[0m");
             return;
         }
 
         long clientTime = System.currentTimeMillis();
-        long latency = clientTime - msg.getTimestamp();
-        String soundKey = generateSoundKey(msg.getX(), msg.getY(), msg.getZ(), msg.getVolume(), msg.getPitch());
+        long latency = clientTime - msg.timestamp();
+        String soundKey = generateSoundKey(msg.x(), msg.y(), msg.z(), msg.volume(), msg.pitch());
 
         if (clientTime - lastCleanupTime > 2000) {
             cleanupSoundHistory(clientTime);
@@ -34,40 +33,42 @@ public class ClientPacketHandler {
         }
 
         Long lastPlayTime = soundHistory.get(soundKey);
-        if (lastPlayTime != null) {
-            if ((clientTime - lastPlayTime) < 1000) return;
+        if (lastPlayTime != null && (clientTime - lastPlayTime) < 1000) {
+            return;
         }
 
-        if (latency > 300) return;
+        if (latency > 300) {
+            return;
+        }
 
-        Vec3 impactPos = new Vec3(msg.getX(), msg.getY(), msg.getZ());
-        if (mc.player.position().distanceTo(impactPos) > 60) return;
+        Vec3 impactPos = new Vec3(msg.x(), msg.y(), msg.z());
+        if (mc.player.position().distanceTo(impactPos) > 60) {
+            return;
+        }
 
         soundHistory.put(soundKey, clientTime);
         try {
             BulletImpactSoundInstance soundInstance = new BulletImpactSoundInstance(
                     ModSounds.SOUND_BULLET_IMPACT.get(),
-                    msg.getSource(),
-                    msg.getVolume(),
-                    msg.getPitch(),
+                    msg.source(),
+                    msg.volume(),
+                    msg.pitch(),
                     impactPos
             );
             mc.getSoundManager().play(soundInstance);
-
         } catch (Exception e) {
-            System.out.printf("\u001B[31m[SoundDebug] Error triying to rerproduce the sound: %s\u001B[0m%n", e.getMessage());
             soundHistory.remove(soundKey);
         }
     }
 
     public static void handleSuppression(PacketSuppression msg) {
-        SuppressionManager.addSuppression(msg.getAmount());
+        SuppressionManager.addSuppression(msg.amount());
     }
 
     private static String generateSoundKey(double x, double y, double z, float volume, float pitch) {
         return String.format("%d:%d:%d:%d:%d",
-                (int)Math.round(x*10), (int)Math.round(y*10), (int)Math.round(z*10),
-                (int)Math.round(volume*100), (int)Math.round(pitch*100));
+                (int) Math.round(x * 10), (int) Math.round(y * 10), (int) Math.round(z * 10),
+                (int) Math.round(volume * 100), (int) Math.round(pitch * 100));
     }
 
     private static void cleanupSoundHistory(long currentTime) {

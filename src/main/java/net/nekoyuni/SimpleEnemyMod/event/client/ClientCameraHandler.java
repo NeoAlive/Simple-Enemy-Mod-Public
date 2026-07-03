@@ -1,13 +1,14 @@
 package net.nekoyuni.SimpleEnemyMod.event.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.client.system.SuppressionManager;
 
-@Mod.EventBusSubscriber(modid = "simpleenemymod", value = Dist.CLIENT)
+@EventBusSubscriber(modid = "simpleenemymod", value = Dist.CLIENT)
 public class ClientCameraHandler {
 
     @SubscribeEvent

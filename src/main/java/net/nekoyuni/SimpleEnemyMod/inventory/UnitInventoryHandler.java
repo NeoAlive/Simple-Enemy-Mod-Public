@@ -3,14 +3,14 @@ package net.nekoyuni.SimpleEnemyMod.inventory;
 import com.tacz.guns.api.entity.IGunOperator;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
 
 public class UnitInventoryHandler extends ItemStackHandler {
     private final PmcUnitEntity unit;
 
     public UnitInventoryHandler(PmcUnitEntity unit) {
-        super(18); // 18
+        super(18);
         this.unit = unit;
     }
 
@@ -35,9 +35,7 @@ public class UnitInventoryHandler extends ItemStackHandler {
             case 3 -> unit.setItemSlot(EquipmentSlot.LEGS, stack);
             case 4 -> unit.setItemSlot(EquipmentSlot.CHEST, stack);
             case 5 -> unit.setItemSlot(EquipmentSlot.HEAD, stack);
-
         }
-
     }
 
     @Override

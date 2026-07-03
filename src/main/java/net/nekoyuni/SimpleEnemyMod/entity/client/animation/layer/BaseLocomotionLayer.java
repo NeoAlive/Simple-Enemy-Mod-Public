@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.nekoyuni.SimpleEnemyMod.entity.client.animation.condition.IAnimationCondition;
 import net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.AnimationPriority;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class BaseLocomotionLayer extends AbstractAnimationLayer {
 

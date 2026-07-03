@@ -1,12 +1,13 @@
 package net.nekoyuni.SimpleEnemyMod.registry;
 
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.compat.curios.CuriosCompat;
 import net.nekoyuni.SimpleEnemyMod.compat.curios.SimpleDataGenerators;
 
-@Mod.EventBusSubscriber(modid = "simpleenemymod", bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = "simpleenemymod", bus = EventBusSubscriber.Bus.MOD)
 public class ModDataGenerators {
 
     @SubscribeEvent

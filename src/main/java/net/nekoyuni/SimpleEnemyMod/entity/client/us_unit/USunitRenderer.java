@@ -22,7 +22,7 @@ public class USunitRenderer extends MobRenderer<USunitEntity, USunitModel<USunit
 
 
     private static ResourceLocation[] USUNIT_TEXTURES = new ResourceLocation[]{
-            new ResourceLocation("simpleenemymod", "textures/entity/us_unit/us_unit_default.png")
+            ResourceLocation.fromNamespaceAndPath("simpleenemymod", "textures/entity/us_unit/us_unit_default.png")
     };
 
     public USunitRenderer(EntityRendererProvider.Context context) {
@@ -63,7 +63,7 @@ public class USunitRenderer extends MobRenderer<USunitEntity, USunitModel<USunit
 
     @Override
     protected void setupRotations(USunitEntity pEntity, PoseStack pPoseStack,
-                                  float pAgeInTicks, float pBodyYRot, float pPartialTicks) {
+                                  float pAgeInTicks, float pBodyYRot, float pPartialTicks, float scale) {
 
         if (pEntity.deathAnimationState.isStarted()) {
 
@@ -90,7 +90,7 @@ public class USunitRenderer extends MobRenderer<USunitEntity, USunitModel<USunit
             return;
         }
 
-        super.setupRotations(pEntity, pPoseStack, pAgeInTicks, pBodyYRot, pPartialTicks);
+        super.setupRotations(pEntity, pPoseStack, pAgeInTicks, pBodyYRot, pPartialTicks, scale);
     }
 
     @Override

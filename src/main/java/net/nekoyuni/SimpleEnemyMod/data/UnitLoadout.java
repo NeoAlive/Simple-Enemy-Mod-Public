@@ -2,7 +2,7 @@ package net.nekoyuni.SimpleEnemyMod.data;
 
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class UnitLoadout {

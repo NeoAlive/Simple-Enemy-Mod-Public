@@ -12,11 +12,12 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.minecraft.world.item.Item;
 import net.nekoyuni.SimpleEnemyMod.compat.curios.CuriosCompat;
 import net.nekoyuni.SimpleEnemyMod.compat.curios.CuriosHelper;
 import net.nekoyuni.SimpleEnemyMod.entity.client.pmc_unit.PmcUnitModel;
@@ -164,7 +165,7 @@ public class GeckoArmorLayerImpl<T extends AbstractUnit, M extends EntityModel<T
                 buffer.getBuffer(RenderType.armorCutoutNoCull(getArmorResource(entity, stack, slot, null))),
                 packedLight,
                 OverlayTexture.NO_OVERLAY,
-                1.0F, 1.0F, 1.0F, 1.0F
+                -1
         );
 
         poseStack.popPose();
@@ -239,16 +240,13 @@ public class GeckoArmorLayerImpl<T extends AbstractUnit, M extends EntityModel<T
     }
 
     public ResourceLocation getArmorResource(Entity entity, ItemStack stack, EquipmentSlot slot, String type) {
+        if (!(stack.getItem() instanceof ArmorItem armorItem)) {
+            return ResourceLocation.withDefaultNamespace("textures/models/armor/leather_layer_1.png");
+        }
 
-        String domain = ForgeRegistries.ITEMS.getKey(stack.getItem()).getNamespace();
-        String path = ForgeRegistries.ITEMS.getKey(stack.getItem()).getPath();
-
-        String defaultPath = domain + ":textures/models/armor/" + path + "_layer_"
-                + (slot == EquipmentSlot.LEGS ? 2 : 1) + (type == null ? "" : "_" + type) + ".png";
-
-        String texture = ForgeHooksClient.getArmorTexture(entity, stack, defaultPath, slot, type);
-
-        return new ResourceLocation(texture);
+        boolean inner = slot == EquipmentSlot.LEGS;
+        ArmorMaterial.Layer layer = armorItem.getMaterial().value().layers().getFirst();
+        return ClientHooks.getArmorTexture(entity, stack, layer, inner, slot);
     }
 
     // VANILLA METHOD

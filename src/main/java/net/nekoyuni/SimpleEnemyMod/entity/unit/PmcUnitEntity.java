@@ -1,11 +1,11 @@
 package net.nekoyuni.SimpleEnemyMod.entity.unit;
 
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -20,11 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.AttackSpecificTargetGoal;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.CommanderOrderGoal;
@@ -36,7 +31,6 @@ import net.nekoyuni.SimpleEnemyMod.entity.equipment.PmcUnitWeaponEquipper;
 import net.nekoyuni.SimpleEnemyMod.inventory.PmcUnitMenu;
 import net.nekoyuni.SimpleEnemyMod.inventory.UnitInventoryHandler;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,9 +59,10 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
 
     // UNIT INVENTORY
     private final UnitInventoryHandler inventory = new UnitInventoryHandler(this);
-    private final LazyOptional<IItemHandler> inventoryOptional = LazyOptional.of(() -> inventory);
 
-
+    public UnitInventoryHandler getInventory() {
+        return inventory;
+    }
     public PmcUnitEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
         this.variant = this.random.nextInt(VARIANT_COUNT);
@@ -83,14 +78,13 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-
-        this.entityData.define(ORDER_TYPE_ID, OrderType.FREE_FIRE.ordinal()); // Before FOLLOW COMMANDER
-        this.entityData.define(OWNER_UUID, Optional.empty());
-        this.entityData.define(SYNC_ROLE, UnitRole.FRIENDLY_DEFAULT.name());
-        this.entityData.define(FORMATION_INDEX, 0);
-        this.entityData.define(ATTACK_TARGET_ID, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ORDER_TYPE_ID, OrderType.FREE_FIRE.ordinal());
+        builder.define(OWNER_UUID, Optional.empty());
+        builder.define(SYNC_ROLE, UnitRole.FRIENDLY_DEFAULT.name());
+        builder.define(FORMATION_INDEX, 0);
+        builder.define(ATTACK_TARGET_ID, -1);
     }
 
     @Override
@@ -118,7 +112,7 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
         }
 
         if (tag.contains("Inventory")) {
-            inventory.deserializeNBT(tag.getCompound("Inventory"));
+            inventory.deserializeNBT(level().registryAccess(), tag.getCompound("Inventory"));
         }
 
 
@@ -143,27 +137,12 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
 
         tag.putInt("FormationIndex", this.getFormationIndex());
 
-        tag.put("Inventory", inventory.serializeNBT());
-    }
-
-    // INVENTORY
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-        if (capability == ForgeCapabilities.ITEM_HANDLER) {
-            return inventoryOptional.cast();
-        }
-        return super.getCapability(capability, facing);
+        tag.put("Inventory", inventory.serializeNBT(level().registryAccess()));
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        inventoryOptional.invalidate();
-    }
-
-    @Override
-    protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, source, recentlyHit);
 
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
@@ -283,12 +262,10 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
                     this.syncEquipmentToInventory();
 
                     if (player instanceof ServerPlayer serverPlayer) {
-                        NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
+                        serverPlayer.openMenu(new SimpleMenuProvider(
                                 (id, playerInv, p) -> new PmcUnitMenu(id, playerInv, this),
                                 Component.literal("PMC Unit Equipment")
-                        ), buf -> {
-                            buf.writeInt(this.getId());
-                        });
+                        ), buf -> buf.writeVarInt(this.getId()));
                     }
 
                     return InteractionResult.SUCCESS;

@@ -6,7 +6,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 import top.theillusivec4.curios.api.CuriosApi;
 
@@ -14,7 +14,7 @@ public class CuriosHelper {
 
     // TODO Move to ClientHelper
     private static final ResourceLocation CURIOS_OVERLAY =
-            new ResourceLocation(SimpleEnemyMod.MODID, "textures/gui/pmc_unit_gui_curios.png");
+            ResourceLocation.fromNamespaceAndPath(SimpleEnemyMod.MODID, "textures/gui/pmc_unit_gui_curios.png");
 
 
     public static void addCuriosSlots(CuriosSlotRegister registerSlot, LivingEntity entity) {
@@ -23,28 +23,28 @@ public class CuriosHelper {
             curiosInventory.getStacksHandler("head").ifPresent(headHandler -> {
 
                 SlotItemHandler slot = new SlotItemHandler(headHandler.getStacks(), 0, -24, 19);
-                slot.setBackground(InventoryMenu.BLOCK_ATLAS, new ResourceLocation("curios", "slot/empty_head_slot"));
+                slot.setBackground(InventoryMenu.BLOCK_ATLAS, ResourceLocation.fromNamespaceAndPath("curios", "slot/empty_head_slot"));
                 registerSlot.register(slot);
             });
 
             curiosInventory.getStacksHandler("back").ifPresent(backHandler -> {
 
                 SlotItemHandler slot = new SlotItemHandler(backHandler.getStacks(), 0, -24, 37);
-                slot.setBackground(InventoryMenu.BLOCK_ATLAS, new ResourceLocation("curios", "slot/empty_back_slot"));
+                slot.setBackground(InventoryMenu.BLOCK_ATLAS, ResourceLocation.fromNamespaceAndPath("curios", "slot/empty_back_slot"));
                 registerSlot.register(slot);
             });
 
             curiosInventory.getStacksHandler("body").ifPresent(bodyHandler -> {
 
                 SlotItemHandler slot = new SlotItemHandler(bodyHandler.getStacks(), 0, -24, 55);
-                slot.setBackground(InventoryMenu.BLOCK_ATLAS, new ResourceLocation("curios", "slot/empty_body_slot"));
+                slot.setBackground(InventoryMenu.BLOCK_ATLAS, ResourceLocation.fromNamespaceAndPath("curios", "slot/empty_body_slot"));
                 registerSlot.register(slot);
             });
 
             curiosInventory.getStacksHandler("belt").ifPresent(beltHandler -> {
 
                 SlotItemHandler slot = new SlotItemHandler(beltHandler.getStacks(), 0, -24, 73);
-                slot.setBackground(InventoryMenu.BLOCK_ATLAS, new ResourceLocation("curios", "slot/empty_belt_slot"));
+                slot.setBackground(InventoryMenu.BLOCK_ATLAS, ResourceLocation.fromNamespaceAndPath("curios", "slot/empty_belt_slot"));
                 registerSlot.register(slot);
             });
 

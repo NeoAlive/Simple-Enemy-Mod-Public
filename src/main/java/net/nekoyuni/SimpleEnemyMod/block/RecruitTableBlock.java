@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -26,11 +27,18 @@ import net.nekoyuni.SimpleEnemyMod.registry.ModEntities;
 
 public class RecruitTableBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<RecruitTableBlock> CODEC = simpleCodec(RecruitTableBlock::new);
+
     public RecruitTableBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(
                 this.getStateDefinition().any().setValue(FACING, Direction.NORTH)
         );
+    }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
     }
 
     @Override
@@ -45,14 +53,12 @@ public class RecruitTableBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                 InteractionHand hand, BlockHitResult hit) {
-
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
 
-        ItemStack itemInHand = player.getItemInHand(hand);
+        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
         if (itemInHand.getItem() != Items.EMERALD || itemInHand.getCount() < 16) {
             player.displayClientMessage(
@@ -81,7 +87,6 @@ public class RecruitTableBlock extends HorizontalDirectionalBlock {
                 (ServerLevelAccessor) level,
                 level.getCurrentDifficultyAt(pos),
                 MobSpawnType.TRIGGERED,
-                null,
                 null
         );
 
@@ -93,10 +98,7 @@ public class RecruitTableBlock extends HorizontalDirectionalBlock {
         return InteractionResult.SUCCESS;
     }
 
-
-    // Sound and Particle Offset and visual effect
-    private void playContractSuccessSound (Level level, BlockPos pos) {
-
+    private void playContractSuccessSound(Level level, BlockPos pos) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -117,19 +119,15 @@ public class RecruitTableBlock extends HorizontalDirectionalBlock {
 
         level.getServer().tell(new net.minecraft.server.TickTask(
                 level.getServer().getTickCount() + 10, () -> {
+                    level.playSound(null, pos, SoundEvents.VILLAGER_YES, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-            level.playSound(null, pos, SoundEvents.VILLAGER_YES, SoundSource.BLOCKS, 1.0F, 1.0F);
-
-            serverLevel.sendParticles(
-                    ParticleTypes.HAPPY_VILLAGER,
-                    pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5,
-                    15,
-                    0.4, 0.4, 0.4,
-                    0.1
-            );
-
-        }));
-
+                    serverLevel.sendParticles(
+                            ParticleTypes.HAPPY_VILLAGER,
+                            pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5,
+                            15,
+                            0.4, 0.4, 0.4,
+                            0.1
+                    );
+                }));
     }
 }
-

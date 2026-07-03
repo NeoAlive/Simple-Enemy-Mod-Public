@@ -4,10 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.client.gui.overlay.CommanderOverlayRenderer;
 import net.nekoyuni.SimpleEnemyMod.client.util.CommanderRayTrace;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType;
@@ -18,7 +19,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = "simpleenemymod", value = Dist.CLIENT)
+@EventBusSubscriber(modid = "simpleenemymod", value = Dist.CLIENT)
 public class ClientClickEventHandler {
 
     @SubscribeEvent

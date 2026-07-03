@@ -1,6 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.compat.curios;
 
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 public class SimpleDataGenerators {
 
