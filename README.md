@@ -1,19 +1,3 @@
-![image](...)
-
-<p align="center">
-  <a href="YOUR_CURSEFORGE">
-    <img ...>
-  </a>
-  <a href="https://github.com/NeoAlive/Simple-Enemy-Mod-Public">
-    <img ...>
-  </a>
-  <a href="https://github.com/NekoYuni/Simple-Enemy-Mod-Public">
-    <img ...>
-  </a>
-</p>
-
-***
-
 # Unofficial Port
 
 This repository contains an **unofficial NeoForge 1.21.1 port** of **Simple Enemy Mod**, originally created by **NekoYuni**.
