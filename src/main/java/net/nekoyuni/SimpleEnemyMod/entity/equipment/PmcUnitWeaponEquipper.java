@@ -76,10 +76,16 @@ public class PmcUnitWeaponEquipper {
                     .setCount(reserveAmmo)
                     .build();
 
-            for (int slot = 1; slot < modifiable.getSlots(); slot++) {
-                if (modifiable.getStackInSlot(slot).isEmpty()) {
-                    modifiable.setStackInSlot(slot, ammoStack);
-                    break;
+            // Prefer placing reserve ammo in the offhand slot (1) so external systems
+            // that search common equipment/offhand can find it for reloads.
+            if (modifiable.getSlots() > 1 && modifiable.getStackInSlot(1).isEmpty()) {
+                modifiable.setStackInSlot(1, ammoStack);
+            } else {
+                for (int slot = 1; slot < modifiable.getSlots(); slot++) {
+                    if (modifiable.getStackInSlot(slot).isEmpty()) {
+                        modifiable.setStackInSlot(slot, ammoStack);
+                        break;
+                    }
                 }
             }
         }
