@@ -4,7 +4,10 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
+import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.item.builder.GunItemBuilder;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,6 +20,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.Level;
 
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.utils.AiGunSpreadHelper;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.EnumSet;
@@ -407,9 +411,13 @@ public class RangedGunAttackGoal extends Goal {
                 break;
 
             case NO_AMMO:
-                info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Out of burst ammo. Starting reload." + ANSI_RESET);
-                operator.reload();
-                resetGoalStates();
+                // Attempt to reload from inventory slot 1
+                if (attemptReloadFromInventory(operator, gunStack)) {
+                    info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Successfully reloaded from reserve ammo." + ANSI_RESET);
+                    // Don't reset goal states - continue firing after reload
+                } else {
+                    trace(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Out of ammo and no reserve ammo available." + ANSI_RESET);
+                }
                 break;
 
             case NOT_DRAW:
@@ -438,6 +446,62 @@ public class RangedGunAttackGoal extends Goal {
         }
     }
 
+
+    private boolean attemptReloadFromInventory(IGunOperator operator, ItemStack gunStack) {
+        // Only works if mob is a PMC unit
+        if (!(this.mob instanceof PmcUnitEntity pmcUnit)) {
+            return false;
+        }
+
+        IGun iGun = IGun.getIGunOrNull(gunStack);
+        if (iGun == null) {
+            return false;
+        }
+
+        // Check if reserve ammo exists in slot 1
+        ItemStack reserveAmmo = pmcUnit.getInventory().getStackInSlot(1);
+        if (reserveAmmo.isEmpty() || reserveAmmo.getCount() <= 0) {
+            debug("[AI AttackGoal] No reserve ammo in slot 1");
+            return false;
+        }
+
+        try {
+            // Get gun and ammo information
+            ResourceLocation gunId = iGun.getGunId(gunStack);
+            var gunDataOpt = TimelessAPI.getCommonGunIndex(gunId);
+            if (gunDataOpt.isEmpty()) {
+                return false;
+            }
+            
+            var gunData = gunDataOpt.get();
+            int magazineCapacity = gunData.getGunData().getAmmoAmount();
+            
+            // Calculate how much ammo to transfer
+            int ammoToTransfer = Math.min(magazineCapacity, reserveAmmo.getCount());
+            
+            // Create a new gun stack with reloaded ammo
+            ItemStack reloadedGun = GunItemBuilder.create()
+                    .setId(gunId)
+                    .setAmmoCount(ammoToTransfer)
+                    .setFireMode(iGun.getFireMode(gunStack))
+                    .setCount(1)
+                    .build(pmcUnit.level().registryAccess());
+            
+            // Update the weapon in hand
+            pmcUnit.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, reloadedGun);
+            
+            // Reduce reserve ammo
+            reserveAmmo.shrink(ammoToTransfer);
+            pmcUnit.getInventory().setStackInSlot(1, reserveAmmo);
+            
+            info(ANSI_GREEN + "[AI AttackGoal] Reloaded " + ammoToTransfer + " rounds. Magazine: " 
+                + ammoToTransfer + "/" + magazineCapacity + ANSI_RESET);
+            return true;
+        } catch (Exception e) {
+            debug("[AI AttackGoal] Error during reload: " + e.getMessage());
+            return false;
+        }
+    }
 
     private boolean hasLineOfSightToTarget(LivingEntity pTarget) {
         if (pTarget == null) return false;

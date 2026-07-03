@@ -30,7 +30,7 @@ public class UnitInventoryHandler extends ItemStackHandler {
                     }
                 }
             }
-            case 1 -> unit.setItemSlot(EquipmentSlot.OFFHAND, stack);
+            // Slot 1 is reserved for ammo storage in inventory and does not sync to equipment
             case 2 -> unit.setItemSlot(EquipmentSlot.FEET, stack);
             case 3 -> unit.setItemSlot(EquipmentSlot.LEGS, stack);
             case 4 -> unit.setItemSlot(EquipmentSlot.CHEST, stack);

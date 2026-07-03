@@ -154,7 +154,7 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
 
     public void syncEquipmentToInventory() {
         inventory.setStackInSlot(0, this.getItemBySlot(EquipmentSlot.MAINHAND).copy());
-        inventory.setStackInSlot(1, this.getItemBySlot(EquipmentSlot.OFFHAND).copy());
+        // Slot 1 is reserved for ammo and should not be overwritten with offhand equipment
         inventory.setStackInSlot(2, this.getItemBySlot(EquipmentSlot.FEET).copy());
         inventory.setStackInSlot(3, this.getItemBySlot(EquipmentSlot.LEGS).copy());
         inventory.setStackInSlot(4, this.getItemBySlot(EquipmentSlot.CHEST).copy());

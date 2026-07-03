@@ -75,11 +75,6 @@ public class PmcUnitMenu extends AbstractContainerMenu {
 
         this.addSlot(new SlotItemHandler(handler, 1, 90, 55) {
             @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof AbstractGunItem;
-            }
-
-            @Override
             public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
                 return Pair.of(InventoryMenu.BLOCK_ATLAS,
                         ResourceLocation.fromNamespaceAndPath("minecraft", "item/empty_slot_shovel"));
