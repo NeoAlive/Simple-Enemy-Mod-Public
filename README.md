@@ -43,16 +43,6 @@ See the original project for full documentation.
 
 ***
 
-## Changes in this Port
-
-- Ported to NeoForge 21.1.x
-- Updated for Minecraft 1.21.1
-- Compatibility fixes
-- Bug fixes
-- (add your own changes here)
-
-***
-
 ## Credits
 
 Original Mod:
