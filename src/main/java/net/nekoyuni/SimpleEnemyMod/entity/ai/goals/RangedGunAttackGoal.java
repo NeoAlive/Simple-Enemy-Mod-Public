@@ -2,10 +2,10 @@ package net.nekoyuni.SimpleEnemyMod.entity.ai.goals;
 
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
+import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.api.item.builder.GunItemBuilder;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
 
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.utils.AiGunSpreadHelper;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
+import net.nekoyuni.SimpleEnemyMod.inventory.PmcInventorySlots;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.EnumSet;
@@ -411,7 +412,7 @@ public class RangedGunAttackGoal extends Goal {
                 break;
 
             case NO_AMMO:
-                // Attempt to reload from inventory slot 1
+                // Attempt to reload from the combined ammo pool (reserve slot + storage).
                 if (attemptReloadFromInventory(operator, gunStack)) {
                     info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Successfully reloaded from reserve ammo." + ANSI_RESET);
                     // Don't reset goal states - continue firing after reload
@@ -447,8 +448,15 @@ public class RangedGunAttackGoal extends Goal {
     }
 
 
+    /**
+     * Reloads the mob's currently held gun by pulling ammo from the combined
+     * ammo pool (dedicated reserve slot + general storage slots), as defined
+     * in {@link PmcInventorySlots#AMMO_SLOTS}. Only stacks whose ammo ID matches
+     * the gun's required ammo type are consumed. Existing gun state (attachments,
+     * NBT) is preserved by modifying the gun in place via IGun rather than
+     * rebuilding it.
+     */
     private boolean attemptReloadFromInventory(IGunOperator operator, ItemStack gunStack) {
-        // Only works if mob is a PMC unit
         if (!(this.mob instanceof PmcUnitEntity pmcUnit)) {
             return false;
         }
@@ -458,49 +466,58 @@ public class RangedGunAttackGoal extends Goal {
             return false;
         }
 
-        // Check if reserve ammo exists in slot 1
-        ItemStack reserveAmmo = pmcUnit.getInventory().getStackInSlot(1);
-        if (reserveAmmo.isEmpty() || reserveAmmo.getCount() <= 0) {
-            debug("[AI AttackGoal] No reserve ammo in slot 1");
+        ResourceLocation gunId = iGun.getGunId(gunStack);
+
+        var gunDataOpt = TimelessAPI.getCommonGunIndex(gunId);
+        if (gunDataOpt.isEmpty()) {
             return false;
         }
 
-        try {
-            // Get gun and ammo information
-            ResourceLocation gunId = iGun.getGunId(gunStack);
-            var gunDataOpt = TimelessAPI.getCommonGunIndex(gunId);
-            if (gunDataOpt.isEmpty()) {
-                return false;
-            }
-            
-            var gunData = gunDataOpt.get();
-            int magazineCapacity = gunData.getGunData().getAmmoAmount();
-            
-            // Calculate how much ammo to transfer
-            int ammoToTransfer = Math.min(magazineCapacity, reserveAmmo.getCount());
-            
-            // Create a new gun stack with reloaded ammo
-            ItemStack reloadedGun = GunItemBuilder.create()
-                    .setId(gunId)
-                    .setAmmoCount(ammoToTransfer)
-                    .setFireMode(iGun.getFireMode(gunStack))
-                    .setCount(1)
-                    .build(pmcUnit.level().registryAccess());
-            
-            // Update the weapon in hand
-            pmcUnit.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, reloadedGun);
-            
-            // Reduce reserve ammo
-            reserveAmmo.shrink(ammoToTransfer);
-            pmcUnit.getInventory().setStackInSlot(1, reserveAmmo);
-            
-            info(ANSI_GREEN + "[AI AttackGoal] Reloaded " + ammoToTransfer + " rounds. Magazine: " 
-                + ammoToTransfer + "/" + magazineCapacity + ANSI_RESET);
-            return true;
-        } catch (Exception e) {
-            debug("[AI AttackGoal] Error during reload: " + e.getMessage());
+        ResourceLocation requiredAmmoId = gunDataOpt.get().getGunData().getAmmoId();
+        int magazineCapacity = gunDataOpt.get().getGunData().getAmmoAmount();
+        int currentAmmo = iGun.getCurrentAmmoCount(gunStack);
+
+        int neededAmmo = magazineCapacity - currentAmmo;
+        if (neededAmmo <= 0) {
             return false;
         }
+
+        int totalTransferred = 0;
+
+        for (int slot : PmcInventorySlots.AMMO_SLOTS) {
+            if (neededAmmo <= 0) break;
+
+            ItemStack candidate = pmcUnit.getInventory().getStackInSlot(slot);
+            if (candidate.isEmpty()) continue;
+
+            // Only consume stacks that are actually the correct ammo type for this gun.
+            IAmmo iAmmo = IAmmo.getIAmmoOrNull(candidate);
+            if (iAmmo == null) continue;
+            if (!iAmmo.getAmmoId(candidate).equals(requiredAmmoId)) continue;
+
+            int transferFromThisSlot = Math.min(neededAmmo, candidate.getCount());
+
+            candidate.shrink(transferFromThisSlot);
+            pmcUnit.getInventory().setStackInSlot(slot, candidate);
+
+            neededAmmo -= transferFromThisSlot;
+            totalTransferred += transferFromThisSlot;
+
+            LOGGER.info("Pulled {} rounds from slot {} (remaining in slot: {})",
+                    transferFromThisSlot, slot, candidate.getCount());
+        }
+
+        if (totalTransferred <= 0) {
+            return false;
+        }
+
+        // Reload the EXISTING gun in place, preserving attachments and NBT.
+        iGun.setCurrentAmmoCount(gunStack, currentAmmo + totalTransferred);
+
+        LOGGER.info("Reload complete. Total transferred: {}. Magazine now: {}",
+                totalTransferred, iGun.getCurrentAmmoCount(gunStack));
+
+        return true;
     }
 
     private boolean hasLineOfSightToTarget(LivingEntity pTarget) {
