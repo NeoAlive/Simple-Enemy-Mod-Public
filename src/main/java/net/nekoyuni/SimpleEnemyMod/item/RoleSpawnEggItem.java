@@ -34,6 +34,57 @@ public class RoleSpawnEggItem extends SpawnEggItem {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
+    Level level = context.getLevel();
+
+    if (level.isClientSide) {
+        return InteractionResult.SUCCESS;
+    }
+    if (!(level instanceof ServerLevel serverLevel)) {
+        return InteractionResult.SUCCESS;
+    }
+
+    ItemStack itemstack = context.getItemInHand();
+    BlockPos blockpos = context.getClickedPos();
+    Direction direction = context.getClickedFace();
+    BlockState blockstate = level.getBlockState(blockpos);
+
+    BlockPos finalSpawnPos = blockstate.getCollisionShape(level, blockpos).isEmpty()
+            ? blockpos
+            : blockpos.relative(direction);
+
+    EntityType<?> entitytype = this.getType(itemstack);
+
+    Entity entity = entitytype.spawn(
+            serverLevel,
+            itemstack,
+            context.getPlayer(),
+            finalSpawnPos,
+            MobSpawnType.SPAWN_EGG,
+            true,
+            !blockpos.equals(finalSpawnPos) && direction == Direction.UP
+    );
+
+    if (entity == null) {
+        return InteractionResult.PASS;
+    }
+
+    if (entity instanceof Mob mob) {
+        mob.setYHeadRot(mob.getYRot());
+        mob.setYBodyRot(mob.getYRot());
+    }
+
+    if (entity instanceof IRoleHolder roleHolder) {
+        roleHolder.setRole(this.role);
+    }
+
+    level.playSound(null, finalSpawnPos, SoundEvents.CHICKEN_EGG, SoundSource.BLOCKS, 0.7F, 0.9F);
+    itemstack.shrink(1);
+
+    return InteractionResult.CONSUME;
+    }
+
+    /*@Override
+    public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
@@ -81,7 +132,7 @@ public class RoleSpawnEggItem extends SpawnEggItem {
         level.playSound(null, finalSpawnPos, SoundEvents.CHICKEN_EGG, SoundSource.BLOCKS, 0.7F, 0.9F);
         itemstack.shrink(1);
         return InteractionResult.CONSUME;
-    }
+    }*/
 
     @Override
     public Component getName(ItemStack stack) {
