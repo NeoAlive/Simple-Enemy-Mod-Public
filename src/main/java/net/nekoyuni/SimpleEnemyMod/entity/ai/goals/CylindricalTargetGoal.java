@@ -5,6 +5,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.phys.AABB;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -15,19 +17,28 @@ public class CylindricalTargetGoal<T extends LivingEntity> extends TargetGoal {
     private final Predicate<LivingEntity> filter;
     private final double horizontalRange;
     private final double verticalRange;
+    private final double humanThreatWeight;
     private LivingEntity foundTarget;
 
     private final TargetingConditions targetingConditions;
 
+    // Old six-param constructor delegates with weight 1.0 (no bias, identical to before).
     public CylindricalTargetGoal(Mob mob, Class<T> targetType, boolean mustSee,
-                                  double horizontalRange, double verticalRange,
-                                  Predicate<LivingEntity> filter) {
+                                 double horizontalRange, double verticalRange,
+                                 Predicate<LivingEntity> filter) {
+        this(mob, targetType, mustSee, horizontalRange, verticalRange, filter, 1.0);
+    }
+
+    // New seven-param constructor — pass a weight < 1.0 to prioritise armed humans.
+    public CylindricalTargetGoal(Mob mob, Class<T> targetType, boolean mustSee,
+                                 double horizontalRange, double verticalRange,
+                                 Predicate<LivingEntity> filter, double humanThreatWeight) {
         super(mob, mustSee);
         this.targetType = targetType;
         this.filter = filter;
         this.horizontalRange = horizontalRange;
         this.verticalRange = verticalRange;
-
+        this.humanThreatWeight = humanThreatWeight;
         this.targetingConditions = TargetingConditions.forCombat()
                 .range(Math.max(horizontalRange, verticalRange) + 8.0) // generous outer bound, real filtering happens below
                 .selector(filter);
@@ -57,14 +68,23 @@ public class CylindricalTargetGoal<T extends LivingEntity> extends TargetGoal {
             if (!this.targetingConditions.test(this.mob, candidate)) continue;
 
             double distSq = dx * dx + dy * dy + dz * dz;
-            if (distSq < bestDistSq) {
-                bestDistSq = distSq;
+
+            // Armed humans feel nearer, so they win the pick.
+            double weight = isHighThreat(candidate) ? this.humanThreatWeight : 1.0;
+            double weightedDistSq = distSq * weight;
+
+            if (weightedDistSq < bestDistSq) {
+                bestDistSq = weightedDistSq;
                 best = candidate;
             }
         }
 
         this.foundTarget = best;
         return best != null;
+    }
+
+    private boolean isHighThreat(LivingEntity candidate) {
+        return candidate instanceof AbstractUnit || candidate instanceof Player;
     }
 
     @Override

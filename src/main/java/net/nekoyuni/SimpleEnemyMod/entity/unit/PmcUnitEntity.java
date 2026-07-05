@@ -156,7 +156,6 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
 
     public void syncEquipmentToInventory() {
         inventory.setStackInSlot(0, this.getItemBySlot(EquipmentSlot.MAINHAND).copy());
-        // Slot 1 is reserved for ammo and should not be overwritten with offhand equipment
         inventory.setStackInSlot(2, this.getItemBySlot(EquipmentSlot.FEET).copy());
         inventory.setStackInSlot(3, this.getItemBySlot(EquipmentSlot.LEGS).copy());
         inventory.setStackInSlot(4, this.getItemBySlot(EquipmentSlot.CHEST).copy());
@@ -198,10 +197,8 @@ this.targetSelector.addGoal(2, new CylindricalTargetGoal<>(this, Monster.class, 
     if (CommonConfig.RU_UNITS_FRIENDLY.get() && target instanceof RUunitEntity) return false;
     if (CommonConfig.US_UNITS_FRIENDLY.get() && target instanceof USunitEntity) return false;
 
-    // Enemy units = always valid
     if (target instanceof AbstractUnit) return true;
 
-    // Hostile mobs = valid
     return target instanceof Enemy;
 }));
 

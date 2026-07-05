@@ -71,13 +71,12 @@ public void setupRoleGoals() {
 
     double range = CommonConfig.UNIT_DETECTION_RANGE.get();
 
-    // Players aren't Monsters, so they need their own goal
+    // Players aren't Monsters
     if (!CommonConfig.RU_UNITS_FRIENDLY.get()) {
         this.targetSelector.addGoal(2, new CylindricalTargetGoal<>(this, Player.class, true,
                 range, 64.0, target -> true));
     }
 
-    // One goal to rule them all: every Monster, judged on the same distance ruler
     this.targetSelector.addGoal(2, new CylindricalTargetGoal<>(this, Monster.class, true,
             range, 64.0, (target) -> {
 
@@ -93,7 +92,6 @@ public void setupRoleGoals() {
         return target instanceof Enemy;
     }));
 
-    // IronGolem is NOT a Monster and NOT an Enemy, so it needs its own goal
     this.targetSelector.addGoal(3, new CylindricalTargetGoal<>(this, IronGolem.class, true,
             range, 64.0, target -> true));
 

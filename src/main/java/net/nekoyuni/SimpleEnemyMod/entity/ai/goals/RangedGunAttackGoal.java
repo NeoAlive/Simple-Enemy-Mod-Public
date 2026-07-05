@@ -412,14 +412,16 @@ public class RangedGunAttackGoal extends Goal {
                 break;
 
             case NO_AMMO:
-                // Attempt to reload from the combined ammo pool (reserve slot + storage).
-                if (attemptReloadFromInventory(operator, gunStack)) {
-                    info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Successfully reloaded from reserve ammo." + ANSI_RESET);
-                    // Don't reset goal states - continue firing after reload
-                } else {
-                    trace(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Out of ammo and no reserve ammo available." + ANSI_RESET);
-                }
-                break;
+    if (this.mob instanceof PmcUnitEntity) {
+        if (attemptReloadFromInventory(operator, gunStack)) {
+            info(ANSI_YELLOW + "[AI AttackGoal] Reloaded from Pmc reserve." + ANSI_RESET);
+        }
+    } else {
+        if (attemptDummyReload(iGun, gunStack)) {
+            info(ANSI_YELLOW + "[AI AttackGoal] Reloaded from dummy ammo." + ANSI_RESET);
+        }
+    }
+    break;
 
             case NOT_DRAW:
                 info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Weapon not drawn. Starting draw" + ANSI_RESET);
@@ -447,15 +449,6 @@ public class RangedGunAttackGoal extends Goal {
         }
     }
 
-
-    /**
-     * Reloads the mob's currently held gun by pulling ammo from the combined
-     * ammo pool (dedicated reserve slot + general storage slots), as defined
-     * in {@link PmcInventorySlots#AMMO_SLOTS}. Only stacks whose ammo ID matches
-     * the gun's required ammo type are consumed. Existing gun state (attachments,
-     * NBT) is preserved by modifying the gun in place via IGun rather than
-     * rebuilding it.
-     */
     private boolean attemptReloadFromInventory(IGunOperator operator, ItemStack gunStack) {
         if (!(this.mob instanceof PmcUnitEntity pmcUnit)) {
             return false;
@@ -511,7 +504,7 @@ public class RangedGunAttackGoal extends Goal {
             return false;
         }
 
-        // Reload the EXISTING gun in place, preserving attachments and NBT.
+        // Reload the existing gun in place preserving NBT.
         iGun.setCurrentAmmoCount(gunStack, currentAmmo + totalTransferred);
 
         LOGGER.info("Reload complete. Total transferred: {}. Magazine now: {}",
@@ -519,6 +512,24 @@ public class RangedGunAttackGoal extends Goal {
 
         return true;
     }
+
+    private boolean attemptDummyReload(IGun iGun, ItemStack gunStack) {
+    var gunDataOpt = TimelessAPI.getCommonGunIndex(iGun.getGunId(gunStack));
+    if (gunDataOpt.isEmpty()) {
+        return false;
+    }
+
+    int magazineCapacity = gunDataOpt.get().getGunData().getAmmoAmount();
+    int currentAmmo = iGun.getCurrentAmmoCount(gunStack);
+
+    if (currentAmmo >= magazineCapacity) {
+        return false; 
+    }
+
+    // Dummy reserve is effectively infinite
+    iGun.setCurrentAmmoCount(gunStack, magazineCapacity);
+    return true;
+}
 
     private boolean hasLineOfSightToTarget(LivingEntity pTarget) {
         if (pTarget == null) return false;
