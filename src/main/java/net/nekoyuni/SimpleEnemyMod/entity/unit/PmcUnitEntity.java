@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
+import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.SelfHealGoal;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.CylindricalTargetGoal;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -183,6 +184,8 @@ public void setupRoleGoals() {
     java.util.function.Predicate<LivingEntity> fireFilter = (target) -> this.isFireAllowed();
 
     this.targetSelector.addGoal(1, new NoPlayerHurtByTargetGoal(this).setAlertOthers().setUnseenMemoryTicks(600));
+    
+    this.goalSelector.addGoal(2, new SelfHealGoal(this, 8.0F)); // 8.0F = 4 hearts, swap for config later
 
     double range = CommonConfig.UNIT_DETECTION_RANGE.get();
 
@@ -297,7 +300,6 @@ this.targetSelector.addGoal(2, new CylindricalTargetGoal<>(this, Monster.class, 
                 break;
         }
     }
-
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {

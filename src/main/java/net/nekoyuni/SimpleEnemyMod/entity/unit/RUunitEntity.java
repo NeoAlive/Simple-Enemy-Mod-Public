@@ -9,6 +9,7 @@ import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.CylindricalTargetGoal;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.equipment.RuWeaponEquipper;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole;
@@ -57,62 +58,60 @@ public class RUunitEntity extends AbstractUnit {
     }
 
     @Override
-    public void setupRoleGoals() {
+public void setupRoleGoals() {
 
-        this.goalSelector.removeAllGoals(pGoal -> true);
-        this.targetSelector.removeAllGoals(pGoal -> true);
+    this.goalSelector.removeAllGoals(pGoal -> true);
+    this.targetSelector.removeAllGoals(pGoal -> true);
 
-        if (this.role == null) {
-            this.setRole(UnitRole.DEFAULT);
-        }
-
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this).setAlertOthers().setUnseenMemoryTicks(600));
-
-        if (!CommonConfig.RU_UNITS_FRIENDLY.get()) {
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PmcUnitEntity.class, true).setUnseenMemoryTicks(800));
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true).setUnseenMemoryTicks(800));
-        }
-
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, USunitEntity.class, true).setUnseenMemoryTicks(800));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Skeleton.class, true));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractIllager.class, true));
-
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true, (target) -> {
-
-            if (target.getClass() == this.getClass()) {
-                return false;
-            }
-
-            if (CommonConfig.RU_UNITS_FRIENDLY.get() && target instanceof PmcUnitEntity) {
-                return false;
-            }
-
-            if (target instanceof AbstractUnit) {
-                return true;
-            }
-
-            return target instanceof Enemy;
-        }));
-
-
-        switch(this.getRole()) {
-
-            case DEFAULT:
-                UnitRole.DEFAULT.getGoals().addGoals(this);
-                break;
-            case SQUAD_LEADER:
-                UnitRole.SQUAD_LEADER.getGoals().addGoals(this);
-                break;
-            case SQUAD_UNIT:
-                UnitRole.SQUAD_UNIT.getGoals().addGoals(this);
-                break;
-            default:
-                UnitRole.DEFAULT.getGoals().addGoals(this);
-                break;
-        }
+    if (this.role == null) {
+        this.setRole(UnitRole.DEFAULT);
     }
+
+    this.targetSelector.addGoal(1, new HurtByTargetGoal(this).setAlertOthers().setUnseenMemoryTicks(600));
+
+    double range = CommonConfig.UNIT_DETECTION_RANGE.get();
+
+    // Players aren't Monsters, so they need their own goal
+    if (!CommonConfig.RU_UNITS_FRIENDLY.get()) {
+        this.targetSelector.addGoal(2, new CylindricalTargetGoal<>(this, Player.class, true,
+                range, 64.0, target -> true));
+    }
+
+    // One goal to rule them all: every Monster, judged on the same distance ruler
+    this.targetSelector.addGoal(2, new CylindricalTargetGoal<>(this, Monster.class, true,
+            range, 64.0, (target) -> {
+
+        if (target.getClass() == this.getClass()) return false;
+
+        // Friendly-fire config with PMC
+        if (CommonConfig.RU_UNITS_FRIENDLY.get() && target instanceof PmcUnitEntity) return false;
+
+        // Enemy units (US, PMC when not friendly) = always valid
+        if (target instanceof AbstractUnit) return true;
+
+        // Hostile mobs = valid
+        return target instanceof Enemy;
+    }));
+
+    // IronGolem is NOT a Monster and NOT an Enemy, so it needs its own goal
+    this.targetSelector.addGoal(3, new CylindricalTargetGoal<>(this, IronGolem.class, true,
+            range, 64.0, target -> true));
+
+    switch(this.getRole()) {
+        case DEFAULT:
+            UnitRole.DEFAULT.getGoals().addGoals(this);
+            break;
+        case SQUAD_LEADER:
+            UnitRole.SQUAD_LEADER.getGoals().addGoals(this);
+            break;
+        case SQUAD_UNIT:
+            UnitRole.SQUAD_UNIT.getGoals().addGoals(this);
+            break;
+        default:
+            UnitRole.DEFAULT.getGoals().addGoals(this);
+            break;
+    }
+}
 
     @Override
     protected SoundEvent getCustomHurtSound() {
