@@ -113,6 +113,8 @@ public class UnitLoadoutManager extends SimpleJsonResourceReloadListener {
         List<UnitLoadout> loadoutPool = LOADOUTS_BY_FACTION.getOrDefault(factionId, Collections.emptyList());
 
         if (loadoutPool.isEmpty()) {
+            System.err.println("Loadout Manager ERROR: Faction '" + factionId +
+                    "' has no loadouts loaded. Check for a datapack override that skipped every entry for this faction.");
             throw new IllegalStateException("The faction '" + factionId + "' it has no loadouts loaded.");
         }
 

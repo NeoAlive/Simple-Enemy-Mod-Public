@@ -12,6 +12,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.nekoyuni.SimpleEnemyMod.client.system.ClientGlowManager;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = "simpleenemymod", value = Dist.CLIENT)
@@ -56,8 +57,9 @@ public class ClientGlowRenderHandler {
 
     @SubscribeEvent
     public static void onRenderLiving(RenderLivingEvent.Pre<?, ?> event) {
-        if (ClientGlowManager.getAll().contains(event.getEntity().getId())) {
-            event.getEntity().setGlowingTag(true);
+        if (event.getEntity() instanceof AbstractUnit unit) {
+            // Drive the outline every frame from selection membership so deselecting clears it.
+            unit.setGlowingFlag(ClientGlowManager.shouldGlow(unit.getId()));
         }
     }
 }

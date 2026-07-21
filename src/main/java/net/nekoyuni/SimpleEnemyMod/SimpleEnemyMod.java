@@ -2,8 +2,6 @@ package net.nekoyuni.SimpleEnemyMod;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.nekoyuni.SimpleEnemyMod.compat.cloth.ClothConfigCompat;
-import net.nekoyuni.SimpleEnemyMod.compat.cloth.ClothConfigScreenHelper;
 import net.nekoyuni.SimpleEnemyMod.config.ModConfigs;
 import net.nekoyuni.SimpleEnemyMod.procedural.events.DynamicEventManager;
 import net.nekoyuni.SimpleEnemyMod.registry.*;
@@ -11,7 +9,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
@@ -34,11 +31,6 @@ public class SimpleEnemyMod {
         ModConfigs.register(modContainer);
 
         DynamicEventManager.register();
-
-        if (ClothConfigCompat.LOADED) {
-            modContainer.registerExtensionPoint(IConfigScreenFactory.class,
-                    (IConfigScreenFactory) (minecraft, parentScreen) -> ClothConfigScreenHelper.createConfigScreen(parentScreen));
-        }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {

@@ -417,9 +417,9 @@ public class RangedGunAttackGoal extends Goal {
             info(ANSI_YELLOW + "[AI AttackGoal] Reloaded from Pmc reserve." + ANSI_RESET);
         }
     } else {
-        if (attemptDummyReload(iGun, gunStack)) {
-            info(ANSI_YELLOW + "[AI AttackGoal] Reloaded from dummy ammo." + ANSI_RESET);
-        }
+        info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Out of ammo. Starting reload." + ANSI_RESET);
+        operator.reload();
+        resetGoalStates();
     }
     break;
 
@@ -512,24 +512,6 @@ public class RangedGunAttackGoal extends Goal {
 
         return true;
     }
-
-    private boolean attemptDummyReload(IGun iGun, ItemStack gunStack) {
-    var gunDataOpt = TimelessAPI.getCommonGunIndex(iGun.getGunId(gunStack));
-    if (gunDataOpt.isEmpty()) {
-        return false;
-    }
-
-    int magazineCapacity = gunDataOpt.get().getGunData().getAmmoAmount();
-    int currentAmmo = iGun.getCurrentAmmoCount(gunStack);
-
-    if (currentAmmo >= magazineCapacity) {
-        return false; 
-    }
-
-    // Dummy reserve is effectively infinite
-    iGun.setCurrentAmmoCount(gunStack, magazineCapacity);
-    return true;
-}
 
     private boolean hasLineOfSightToTarget(LivingEntity pTarget) {
         if (pTarget == null) return false;

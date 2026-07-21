@@ -439,6 +439,13 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
         this.movementLockedByManager = false;
     }
 
+    // COMMANDER SELECTION GLOW
+    // Client-side outline glow: isCurrentlyGlowing() reads shared flag 6 on the client, so
+    // Entity#setGlowingTag is a no-op there. Set the flag directly (accessible from this subclass).
+    public void setGlowingFlag(boolean glow) {
+        this.setSharedFlag(6, glow);
+    }
+
 
     public abstract void equipRandomGun();
     public abstract void setupRoleGoals();
