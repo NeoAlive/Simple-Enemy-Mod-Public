@@ -13,9 +13,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.SelfHealGoal;
-import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.CylindricalTargetGoal;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -168,55 +168,72 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
     }
 
     @Override
-public void setupRoleGoals() {
+    public void setupRoleGoals() {
 
-    this.goalSelector.removeAllGoals(pGoal -> true);
-    this.targetSelector.removeAllGoals(pGoal -> true);
+        this.goalSelector.removeAllGoals(pGoal -> true);
+        this.targetSelector.removeAllGoals(pGoal -> true);
 
-    if (this.role == null) {
-        this.setRole(UnitRole.FRIENDLY_DEFAULT);
+        if (this.role == null) {
+            this.setRole(UnitRole.FRIENDLY_DEFAULT);
+        }
+
+        this.targetSelector.addGoal(0, new AttackSpecificTargetGoal(this));
+
+        java.util.function.Predicate<LivingEntity> fireFilter = (target) -> this.isFireAllowed();
+
+        this.targetSelector.addGoal(1, new NoPlayerHurtByTargetGoal(this).setAlertOthers().setUnseenMemoryTicks(600));
+
+        this.goalSelector.addGoal(2, new SelfHealGoal(this, 8.0F)); // port-only: PMC allies self-heal (not in original)
+
+        if (!CommonConfig.US_UNITS_FRIENDLY.get()) {
+            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, USunitEntity.class, true, fireFilter).setUnseenMemoryTicks(800));
+        }
+
+        if (!CommonConfig.RU_UNITS_FRIENDLY.get()) {
+            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, RUunitEntity.class, true, fireFilter).setUnseenMemoryTicks(800));
+        }
+
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Zombie.class, true, fireFilter));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Skeleton.class, true, fireFilter));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractIllager.class, true, fireFilter));
+
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true, (target) -> {
+
+            if (target.getClass() == this.getClass()) {
+                return false;
+            }
+
+            if (CommonConfig.RU_UNITS_FRIENDLY.get() && target instanceof RUunitEntity) {
+                return false;
+            }
+
+            if (CommonConfig.US_UNITS_FRIENDLY.get() && target instanceof USunitEntity) {
+                return false;
+            }
+
+            if (target instanceof AbstractUnit) {
+                return true;
+            }
+
+            return target instanceof Enemy;
+        }));
+
+
+        switch(this.getRole()) {
+            case FRIENDLY_DEFAULT:
+                UnitRole.FRIENDLY_DEFAULT.getGoals().addGoals(this);
+                break;
+            case FRIENDLY_SQUAD_LEADER:
+                UnitRole.FRIENDLY_SQUAD_LEADER.getGoals().addGoals(this);
+                break;
+            case FRIENDLY_SQUAD_UNIT:
+                UnitRole.FRIENDLY_SQUAD_UNIT.getGoals().addGoals(this);
+                break;
+            default:
+                UnitRole.FRIENDLY_DEFAULT.getGoals().addGoals(this);
+                break;
+        }
     }
-
-    this.targetSelector.addGoal(0, new AttackSpecificTargetGoal(this));
-
-    java.util.function.Predicate<LivingEntity> fireFilter = (target) -> this.isFireAllowed();
-
-    this.targetSelector.addGoal(1, new NoPlayerHurtByTargetGoal(this).setAlertOthers().setUnseenMemoryTicks(600));
-    
-    this.goalSelector.addGoal(2, new SelfHealGoal(this, 8.0F)); // 8.0F = 4 hearts, swap for config later
-
-    double range = CommonConfig.UNIT_DETECTION_RANGE.get();
-
-this.targetSelector.addGoal(2, new CylindricalTargetGoal<>(this, Monster.class, true,
-        range, 64.0, (target) -> {
-
-    if (!this.isFireAllowed()) return false;
-    if (target.getClass() == this.getClass()) return false;
-
-    if (CommonConfig.RU_UNITS_FRIENDLY.get() && target instanceof RUunitEntity) return false;
-    if (CommonConfig.US_UNITS_FRIENDLY.get() && target instanceof USunitEntity) return false;
-
-    if (target instanceof AbstractUnit) return true;
-
-    return target instanceof Enemy;
-}));
-
-
-    switch(this.getRole()) {
-        case FRIENDLY_DEFAULT:
-            UnitRole.FRIENDLY_DEFAULT.getGoals().addGoals(this);
-            break;
-        case FRIENDLY_SQUAD_LEADER:
-            UnitRole.FRIENDLY_SQUAD_LEADER.getGoals().addGoals(this);
-            break;
-        case FRIENDLY_SQUAD_UNIT:
-            UnitRole.FRIENDLY_SQUAD_UNIT.getGoals().addGoals(this);
-            break;
-        default:
-            UnitRole.FRIENDLY_DEFAULT.getGoals().addGoals(this);
-            break;
-    }
-}
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
