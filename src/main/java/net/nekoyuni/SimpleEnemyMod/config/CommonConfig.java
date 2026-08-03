@@ -196,7 +196,8 @@ public class CommonConfig {
         builder.push("Drops");
 
         ENABLE_CUSTOM_DROPS = builder
-                .comment("Enables or disables modified weapon drops for Units.")
+                .comment("When true, Units may drop cleaned TaCZ weapons/ammo using the chances below.",
+                        "When false, Units drop no guns (vanilla equipment drops are suppressed).")
                 .define("enableCustomDrops", true);
 
         GUN_DROP_CHANCE = builder

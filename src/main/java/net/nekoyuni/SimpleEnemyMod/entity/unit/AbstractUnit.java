@@ -88,6 +88,11 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
     protected AbstractUnit(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
 
+        // Mob defaults ~8.5% equipment drop chance. Held guns use dummy ammo for AI and must
+        // never drop via vanilla — UnitDropsHandler owns weapon loot instead.
+        this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+        this.setDropChance(EquipmentSlot.OFFHAND, 0.0F);
+
         if (this.getNavigation() instanceof GroundPathNavigation groundNav) {
             groundNav.setCanOpenDoors(true);
         }
@@ -144,6 +149,10 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.setPersistenceRequired();
+
+        // Mob may restore default hand drop chances from NBT — keep AI guns non-droppable.
+        this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+        this.setDropChance(EquipmentSlot.OFFHAND, 0.0F);
 
         if (tag.contains("UnitRole")) {
             this.setRole(UnitRole.valueOf(tag.getString("UnitRole")));

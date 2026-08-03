@@ -15,7 +15,9 @@ public class DropsClothConfig {
 
         drop.addEntry(entryBuilder.startBooleanToggle(Component.literal("Enable Custom Drops"), CommonConfig.ENABLE_CUSTOM_DROPS.get())
                 .setDefaultValue(true)
-                .setTooltip(Component.literal("Enables or disables modified weapon drops for Units."))
+                .setTooltip(
+                        Component.literal("When enabled, Units may drop cleaned TaCZ weapons/ammo using the chances below."),
+                        Component.literal("When disabled, Units drop no guns (vanilla equipment drops are suppressed)."))
                 .setSaveConsumer(newValue -> CommonConfig.ENABLE_CUSTOM_DROPS.set(newValue))
                 .build());
 

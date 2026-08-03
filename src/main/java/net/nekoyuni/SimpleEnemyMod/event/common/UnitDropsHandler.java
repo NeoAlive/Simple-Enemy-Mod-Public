@@ -24,22 +24,23 @@ public class UnitDropsHandler {
     @SubscribeEvent
     public static void onUnitDrops(LivingDropsEvent event) {
 
-        if (!CommonConfig.ENABLE_CUSTOM_DROPS.get()) return;
-
         if (!(event.getEntity() instanceof AbstractUnit unit)) return;
 
-        var provider = unit.level().registryAccess();
+        // Always strip equipped/inventory guns. US/RU guns carry dummy ammo (~9999) for AI
+        // infinite fire; falling through to vanilla Mob equipment drops leaks those stacks.
+        // Disabling custom drops previously returned early and allowed exactly that.
         ItemStack sourceGun = findGunStack(unit);
+        event.getDrops().removeIf(itemEntity ->
+                IGun.getIGunOrNull(itemEntity.getItem()) != null
+        );
 
+        if (!CommonConfig.ENABLE_CUSTOM_DROPS.get()) return;
         if (sourceGun.isEmpty()) return;
 
         IGun iGun = IGun.getIGunOrNull(sourceGun);
         if (iGun == null) return;
 
-        event.getDrops().removeIf(itemEntity ->
-                IGun.getIGunOrNull(itemEntity.getItem()) != null
-        );
-
+        var provider = unit.level().registryAccess();
         ResourceLocation gunId = iGun.getGunId(sourceGun);
         FireMode fireMode = iGun.getFireMode(sourceGun);
 

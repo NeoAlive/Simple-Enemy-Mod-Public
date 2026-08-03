@@ -6,6 +6,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.nekoyuni.SimpleEnemyMod.compat.cloth.client.RenderClothConfig;
 import net.nekoyuni.SimpleEnemyMod.compat.cloth.common.*;
+import net.nekoyuni.SimpleEnemyMod.config.ClientConfig;
+import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
 
 public class ClothConfigScreenHelper {
 
@@ -17,6 +19,12 @@ public class ClothConfigScreenHelper {
 
         builder.setGlobalized(true);
         builder.setGlobalizedExpanded(false);
+
+        // ConfigValue.set() only updates memory — persist both specs to disk on Save.
+        builder.setSavingRunnable(() -> {
+            CommonConfig.SPEC.save();
+            ClientConfig.SPEC.save();
+        });
 
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
