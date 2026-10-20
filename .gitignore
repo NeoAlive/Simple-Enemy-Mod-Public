@@ -23,3 +23,6 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# local-only handoff notes for the tacz_sewv NeoForge port
+docs/SEWV_PORTING.md
