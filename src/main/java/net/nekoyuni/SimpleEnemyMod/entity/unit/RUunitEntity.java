@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.entity.unit;
 
+import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.*;
@@ -88,19 +89,10 @@ public class RUunitEntity extends AbstractUnit {
                 UnitFactionTags::isUsUnit).setUnseenMemoryTicks(800));
 
         this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
-                this, Zombie.class, true, vRange));
-
-        this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
-                this, Skeleton.class, true, vRange));
-
-        this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
                 this, IronGolem.class, true, vRange));
 
-        this.targetSelector.addGoal(4, new VerticalAwareTargetGoal<>(
-                this, AbstractIllager.class, true, vRange));
-
         this.targetSelector.addGoal(2, new VerticalAwareTargetGoal<>(
-                this, Monster.class, true, vRange, (target) -> {
+                this, LivingEntity.class, true, vRange, (target) -> {
 
             if (UnitFactionTags.isFriendlyToRu(target)) {
                 return false;
@@ -133,6 +125,14 @@ public class RUunitEntity extends AbstractUnit {
                 UnitRole.DEFAULT.getGoals().addGoals(this);
                 break;
         }
+    }
+
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if (target != null && UnitFactionTags.isFriendlyToNpcFaction(this, target)) {
+            return;
+        }
+        super.setTarget(target);
     }
 
     @Override

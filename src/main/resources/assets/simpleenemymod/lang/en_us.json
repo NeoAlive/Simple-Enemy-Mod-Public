@@ -24,10 +24,23 @@
   "key.category.simpleenemymod.general": "Simple Enemy Mod",
   "key.simpleenemymod.commander_menu": "Open Commander Menu",
 
+  "subtitles.simpleenemymod.sound_bullet_impact": "Bullet Impact",
+
+  "subtitles.simpleenemymod.sound_us_unit_hurt": "US soldier hurts",
+  "subtitles.simpleenemymod.sound_us_unit_death": "US soldier dies",
+  "subtitles.simpleenemymod.sound_us_unit_alert": "US soldier shouts",
+
+  "subtitles.simpleenemymod.sound_ru_unit_hurt": "RU soldier hurts",
+  "subtitles.simpleenemymod.sound_ru_unit_death": "RU soldier dies",
+  "subtitles.simpleenemymod.sound_ru_unit_alert": "RU soldier shouts",
+
   "config.simpleenemymod.cat.render_distance": "Render",
   "config.simpleenemymod.render_distance": "Render Distance",
   "config.simpleenemymod.render_distance.tooltip.1": "Max Render Distance (in Blocks) for Units",
   "config.simpleenemymod.render_distance.tooltip.2": "Important!!: Render Distance > Detection Range",
+
+  "config.simpleenemymod.render_muzzle_flash": "Enable Muzzle Flash Render",
+  "config.simpleenemymod.render_muzzle_flash.tooltip": "Activate or deactivate the visual Muzzle Flash effect",
 
   "config.simpleenemymod.cat.difficulty": "Difficulty",
   "config.simpleenemymod.difficulty": "AI Difficulty",
@@ -58,6 +71,31 @@
   "config.simpleenemymod.ai_shooting.max_burst_cooldown": "Max Burst Cooldown",
   "config.simpleenemymod.ai_shooting.max_burst_cooldown.tooltip": "Maximum cooldown between bursts (ticks)",
 
+  "config.simpleenemymod.cat.tactical": "AI Tactical",
+  "config.simpleenemymod.tactical.enable_soft_obstacle_breaking": "Enable Soft Obstacle Breaking",
+  "config.simpleenemymod.tactical.enable_soft_obstacle_breaking.tooltip": "Allows NPCs to break grass, leaves, and glass while pathfinding.",
+
+  "config.simpleenemymod.tactical.enable_precise_foliage_los": "Enable Precise Foliage Los",
+  "config.simpleenemymod.tactical.enable_precise_foliage_los.tooltip": "Foliage, bushes, and glass will no longer block NPC line-of-sight or shooting.",
+
+  "config.simpleenemymod.tactical.enable_tactical_hearing": "Enable Tactical Hearing",
+  "config.simpleenemymod.tactical.enable_tactical_hearing.tooltip": "Allows units to detect and react to nearby combat sounds.",
+
+  "config.simpleenemymod.tactical.enable_smart_cover_search": "Enable Smart Cover Search",
+  "config.simpleenemymod.tactical.enable_smart_cover_search.tooltip": "NPCs will evaluate and score nearby cover instead of choosing the closest block.",
+
+  "config.simpleenemymod.tactical.enable_squad_combat_memory": "Enable Squad Combat Memory",
+  "config.simpleenemymod.tactical.enable_squad_combat_memory.tooltip": "Shares spotted, heard, or suppressed enemy positions among squad members.",
+
+  "config.simpleenemymod.tactical.enable_tactical_suppression": "Enable Tactical Suppression",
+  "config.simpleenemymod.tactical.enable_tactical_suppression.tooltip": "Units suffer suppression effects from nearby bullet impacts and sustained gunfire.",
+
+  "config.simpleenemymod.tactical.suppression_accuracy_spread_penalty": "Suppression Accuracy Spread Penalty",
+  "config.simpleenemymod.tactical.suppression_accuracy_spread_penalty.tooltip": "Additional weapon spread applied per suppression point under fire.",
+
+  "config.simpleenemymod.tactical.enable_distance_target_priority": "Enable Distance Target Priority",
+  "config.simpleenemymod.tactical.enable_distance_target_priority.tooltip": "NPCs prioritize closer threats when selecting targets.",
+
   "config.simpleenemymod.cat.drops": "Drops",
   "config.simpleenemymod.drops.enable_custom_drops": "Enable Custom Drops",
   "config.simpleenemymod.drops.enable_custom_drops.tooltip": "Enables or disables modified weapon drops for Units.",
@@ -85,6 +123,12 @@
   "config.simpleenemymod.spawns.enable_village_garrison.tooltip.2": "When set to false, the event is disabled",
 
   "config.simpleenemymod.cat.spawn_event": "Spawn Events",
+  "config.simpleenemymod.spawn_event.global_cooldown_ticks": "Event Global Cooldown Ticks",
+  "config.simpleenemymod.spawn_event.global_cooldown_ticks.tooltip": "Global cooldown ticks between events. 20 ticks = 1 second. 4800 = 4 minutes",
+
+  "config.simpleenemymod.spawn_event.event_tick_window": "Event Tick Window",
+  "config.simpleenemymod.spawn_event.event_tick_window.tooltip": "Ticks between event evaluation attempts per player. 20 ticks = 1 second. Default: 1200 = 1 minute",
+
   "config.simpleenemymod.spawn_event.patrol_base_chance": "Patrol Base Chance",
   "config.simpleenemymod.spawn_event.patrol_base_chance.tooltip": "Base spawn chance for Patrol Event (per minute)",
 
@@ -106,6 +150,9 @@
   "config.simpleenemymod.cat.unit_attributes": "Unit Attributes",
   "config.simpleenemymod.unit_attributes.max_health": "Unit Max Health",
   "config.simpleenemymod.unit_attributes.max_health.tooltip": "Max Health for All Units",
+
+  "config.simpleenemymod.unit_attributes.armor": "Unit Armor Points",
+  "config.simpleenemymod.unit_attributes.armor.tooltip": "Unit Armor Points for All Units",
 
   "config.simpleenemymod.unit_attributes.walk_speed": "Unit Walk Speed",
   "config.simpleenemymod.unit_attributes.walk_speed.tooltip": "Walk Speed for All Units",

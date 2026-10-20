@@ -180,12 +180,14 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
 
         if(!this.level().isClientSide) {
             double health = UnitAttributesConfig.UNIT_HEALTH.get();
+            double armor = UnitAttributesConfig.UNIT_ARMOR.get();
             double speed = UnitAttributesConfig.UNIT_SPEED.get();
             double range = UnitAttributesConfig.UNIT_DETECTION_RANGE.get();
 
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(health);
             this.setHealth((float) health);
 
+            this.getAttribute(Attributes.ARMOR).setBaseValue(armor);
             this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(speed);
             this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(range);
 
@@ -533,7 +535,8 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
         if (!TacticalAiConfig.enableTacticalSuppression() || amount <= 0.0F) {
             return false;
         }
-        if (source == this || UnitFactionTags.isFriendlyFire(this, source) || UnitFactionTags.isSameTaggedFaction(this, source)) {
+        if (source == this || UnitFactionTags.isFriendlyFire(this, source) || UnitFactionTags.isSameTaggedFaction(this, source)
+                || (source instanceof LivingEntity living && UnitFactionTags.isFriendlyToNpcFaction(this, living))) {
             return false;
         }
 

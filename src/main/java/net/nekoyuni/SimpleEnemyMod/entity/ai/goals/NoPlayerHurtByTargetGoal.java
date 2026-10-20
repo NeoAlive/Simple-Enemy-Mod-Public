@@ -21,11 +21,6 @@ public class NoPlayerHurtByTargetGoal extends HurtByTargetGoal {
 
         LivingEntity potentialTarget = this.mob.getLastHurtByMob();
 
-        if (potentialTarget instanceof Player) {
-            this.mob.setTarget(null);
-            return false;
-        }
-
-        return true;
+        return !(potentialTarget instanceof Player);
     }
 }

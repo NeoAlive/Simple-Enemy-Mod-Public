@@ -11,6 +11,27 @@ public class SpawnEventClothConfig {
     public static void setup (ConfigBuilder builder, ConfigEntryBuilder entryBuilder) {
         ConfigCategory spawnEvents = builder.getOrCreateCategory(Component.translatable("config.simpleenemymod.cat.spawn_event"));
 
+        // GLOBAL
+        spawnEvents.addEntry(entryBuilder.startIntField(
+                        Component.translatable("config.simpleenemymod.spawn_event.global_cooldown_ticks"),
+                        EventSpawnConfig.EVENT_GLOBAL_COOLDOWN_TICKS.get())
+                .setDefaultValue(4800)
+                .setMin(100)
+                .setMax(72000)
+                .setTooltip(Component.translatable("config.simpleenemymod.spawn_event.global_cooldown_ticks.tooltip"))
+                .setSaveConsumer(newValue -> EventSpawnConfig.EVENT_GLOBAL_COOLDOWN_TICKS.set(newValue))
+                .build());
+
+        spawnEvents.addEntry(entryBuilder.startIntField(
+                        Component.translatable("config.simpleenemymod.spawn_event.event_tick_window"),
+                        EventSpawnConfig.EVENT_TICK_WINDOW.get())
+                .setDefaultValue(1200)
+                .setMin(100)
+                .setMax(72000)
+                .setTooltip(Component.translatable("config.simpleenemymod.spawn_event.event_tick_window.tooltip"))
+                .setSaveConsumer(newValue -> EventSpawnConfig.EVENT_TICK_WINDOW.set(newValue))
+                .build());
+
         // PATROL EVENT
         spawnEvents.addEntry(entryBuilder.startDoubleField(
                         Component.translatable("config.simpleenemymod.spawn_event.patrol_base_chance"),

@@ -15,6 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
+import net.nekoyuni.SimpleEnemyMod.config.ClientConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 
 public class GunLayerRenderer<T extends LivingEntity, M extends EntityModel<T>>
@@ -112,6 +113,10 @@ public class GunLayerRenderer<T extends LivingEntity, M extends EntityModel<T>>
                 buffer,
                 packedLight
         );
+
+        if (ClientConfig.RENDER_MUZZLE_FLASH.get()) {
+            NpcMuzzleFlashRenderer.render(entity, stack, poseStack);
+        }
     }
 
 

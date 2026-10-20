@@ -226,17 +226,8 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
         }
 
         // Normal Goals
-        this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
-                this, Zombie.class, true, vRange, fireFilter));
-
-        this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
-                this, Skeleton.class, true, vRange, fireFilter));
-
-        this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
-                this, AbstractIllager.class, true, vRange, fireFilter));
-
         this.targetSelector.addGoal(2, new VerticalAwareTargetGoal<>(
-                this, Monster.class, true, vRange, (target) -> {
+                this, LivingEntity.class, true, vRange, (target) -> {
 
             if (!fireFilter.test(target)) {
                 return false;
@@ -372,8 +363,7 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
     // patch: prevent entity returns fire
     @Override
     public void setTarget(@Nullable LivingEntity target) {
-        if (target instanceof Player) {
-            super.setTarget(null);
+        if (target instanceof Player || (target != null && UnitFactionTags.isFriendlyToPmc(target))) {
             return;
         }
         super.setTarget(target);

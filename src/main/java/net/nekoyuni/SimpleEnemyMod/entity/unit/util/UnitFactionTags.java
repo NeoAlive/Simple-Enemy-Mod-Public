@@ -39,6 +39,26 @@ public final class UnitFactionTags {
         return isPmcUnit(entity) || isRuUnit(entity) || isUsUnit(entity);
     }
 
+    public static boolean isFriendlyToNpcFaction(LivingEntity npc, LivingEntity other) {
+        if (npc == null || other == null || npc == other) {
+            return false;
+        }
+
+        if (isUsUnit(npc)) {
+            return isFriendlyToUs(other);
+        }
+
+        if (isRuUnit(npc)) {
+            return isFriendlyToRu(other);
+        }
+
+        if (isPmcUnit(npc)) {
+            return isFriendlyToPmc(other);
+        }
+
+        return false;
+    }
+
     public static boolean isSameTaggedFaction(Entity first, Entity second) {
         if (first == null || second == null) {
             return false;
@@ -62,19 +82,22 @@ public final class UnitFactionTags {
     }
 
     public static boolean isFriendlyToPmc(LivingEntity target) {
-        return isPmcUnit(target)
+        return target instanceof Player
+                || isPmcUnit(target)
                 || (FactionsConfig.RU_UNITS_FRIENDLY.get() && isRuUnit(target))
                 || (FactionsConfig.US_UNITS_FRIENDLY.get() && isUsUnit(target));
     }
 
     public static boolean isFriendlyToRu(LivingEntity target) {
         return isRuUnit(target)
-                || (FactionsConfig.RU_UNITS_FRIENDLY.get() && isPmcUnit(target));
+                || (FactionsConfig.RU_UNITS_FRIENDLY.get() && isPmcUnit(target))
+                || (FactionsConfig.RU_UNITS_FRIENDLY.get() && target instanceof Player);
     }
 
     public static boolean isFriendlyToUs(LivingEntity target) {
         return isUsUnit(target)
-                || (FactionsConfig.US_UNITS_FRIENDLY.get() && isPmcUnit(target));
+                || (FactionsConfig.US_UNITS_FRIENDLY.get() && isPmcUnit(target))
+                || (FactionsConfig.US_UNITS_FRIENDLY.get() && target instanceof Player);
     }
 
     private static boolean isIn(Entity entity, TagKey<EntityType<?>> tag) {
