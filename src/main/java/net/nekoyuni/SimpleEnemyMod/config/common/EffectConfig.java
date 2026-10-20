@@ -1,12 +1,12 @@
 package net.nekoyuni.SimpleEnemyMod.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class EffectConfig {
 
-    public static ForgeConfigSpec.BooleanValue ENABLE_SUPPRESSION;
+    public static ModConfigSpec.BooleanValue ENABLE_SUPPRESSION;
 
-    public static void init (ForgeConfigSpec.Builder builder) {
+    public static void init (ModConfigSpec.Builder builder) {
         builder.push("Visual Effects");
 
         ENABLE_SUPPRESSION = builder

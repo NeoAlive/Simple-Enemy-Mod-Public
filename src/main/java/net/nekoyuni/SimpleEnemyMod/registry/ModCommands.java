@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.nekoyuni.SimpleEnemyMod.commands.SemEventCommand;
-import net.nekoyuni.SimpleEnemyMod.commands.SemTestCommand;
 
 public class ModCommands {
 
@@ -16,7 +15,6 @@ public class ModCommands {
                 .requires(source -> source.hasPermission(2));
 
         rootCommand.then(SemEventCommand.register());
-        rootCommand.then(SemTestCommand.register());
 
         dispatcher.register(rootCommand);
     }

@@ -2,7 +2,7 @@ package net.nekoyuni.SimpleEnemyMod.entity.ai.profile.role;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 
@@ -92,7 +92,7 @@ public record RoleBehaviorProfile(
 
     private static String weaponId(ItemStack stack) {
         if (stack == null || stack.isEmpty()) return "";
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         return id == null ? "" : id.toString().toLowerCase(Locale.ROOT);
     }
 }

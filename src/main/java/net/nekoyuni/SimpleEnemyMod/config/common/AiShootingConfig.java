@@ -1,19 +1,19 @@
 package net.nekoyuni.SimpleEnemyMod.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class AiShootingConfig {
 
-    public static ForgeConfigSpec.DoubleValue MAX_SHOOT_DISTANCE;
-    public static ForgeConfigSpec.DoubleValue BASE_SPREAD;
-    public static ForgeConfigSpec.DoubleValue SPREAD_INCREASE;
-    public static ForgeConfigSpec.DoubleValue MAX_SPREAD;
-    public static ForgeConfigSpec.IntValue MIN_BURST;
-    public static ForgeConfigSpec.IntValue MAX_BURST;
-    public static ForgeConfigSpec.IntValue MIN_BURST_COOLDOWN;
-    public static ForgeConfigSpec.IntValue MAX_BURST_COOLDOWN;
+    public static ModConfigSpec.DoubleValue MAX_SHOOT_DISTANCE;
+    public static ModConfigSpec.DoubleValue BASE_SPREAD;
+    public static ModConfigSpec.DoubleValue SPREAD_INCREASE;
+    public static ModConfigSpec.DoubleValue MAX_SPREAD;
+    public static ModConfigSpec.IntValue MIN_BURST;
+    public static ModConfigSpec.IntValue MAX_BURST;
+    public static ModConfigSpec.IntValue MIN_BURST_COOLDOWN;
+    public static ModConfigSpec.IntValue MAX_BURST_COOLDOWN;
 
-    public static void init(ForgeConfigSpec.Builder builder) {
+    public static void init(ModConfigSpec.Builder builder) {
         builder.push("gun_ai_shooting_config");
 
         MAX_SHOOT_DISTANCE = builder

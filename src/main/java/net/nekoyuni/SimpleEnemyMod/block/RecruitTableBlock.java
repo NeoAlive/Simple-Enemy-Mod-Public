@@ -10,6 +10,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -55,7 +56,22 @@ public class RecruitTableBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hit) {
+        return this.use(state, level, pos, player, hand, hit).consumesAction()
+                ? ItemInteractionResult.SUCCESS
+                : ItemInteractionResult.FAIL;
+    }
+
+    @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        return this.use(state, level, pos, player, InteractionHand.MAIN_HAND, hit);
+    }
+
+    // Upstream's 1.20 Block#use, kept with its original signature; 1.21 splits it into the two overrides above.
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+                                 InteractionHand hand, BlockHitResult hit) {
+
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }

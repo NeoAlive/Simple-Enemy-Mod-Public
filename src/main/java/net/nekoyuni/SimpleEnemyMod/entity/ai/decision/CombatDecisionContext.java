@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.profile.role.RoleBehaviorProfile;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.squad.SquadContext;
@@ -205,7 +205,7 @@ public record CombatDecisionContext(
     private static float weaponThreat(LivingEntity entity) {
         ItemStack main = entity.getMainHandItem();
         if (main.isEmpty()) return 0.05F;
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(main.getItem());
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(main.getItem());
         String path = id == null ? "" : id.toString().toLowerCase(Locale.ROOT);
         if (path.contains("m249") || path.contains("rpk") || path.contains("lmg") || path.contains("mg")) return 1.0F;
         if (path.contains("shotgun") || path.contains("m1014") || path.contains("aa12") || path.contains("m870") || path.contains("db_short")) return 0.92F;

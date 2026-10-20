@@ -1,6 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Neutral tactical AI switches migrated from the public AI branch.
@@ -10,65 +10,65 @@ import net.minecraftforge.common.ForgeConfigSpec;
  */
 public class TacticalAiConfig {
 
-    public static ForgeConfigSpec.BooleanValue ENABLE_SOFT_OBSTACLE_BREAKING;
-    public static ForgeConfigSpec.BooleanValue ENABLE_LADDER_FALLBACK;
-    public static ForgeConfigSpec.BooleanValue ENABLE_PRECISE_FOLIAGE_LOS;
-    public static ForgeConfigSpec.BooleanValue ENABLE_HAZARDOUS_COVER_REJECTION;
-    public static ForgeConfigSpec.IntValue AI_LOS_CACHE_TICKS;
+    public static ModConfigSpec.BooleanValue ENABLE_SOFT_OBSTACLE_BREAKING;
+    public static ModConfigSpec.BooleanValue ENABLE_LADDER_FALLBACK;
+    public static ModConfigSpec.BooleanValue ENABLE_PRECISE_FOLIAGE_LOS;
+    public static ModConfigSpec.BooleanValue ENABLE_HAZARDOUS_COVER_REJECTION;
+    public static ModConfigSpec.IntValue AI_LOS_CACHE_TICKS;
 
-    public static ForgeConfigSpec.BooleanValue ENABLE_SMART_COVER_SEARCH;
-    public static ForgeConfigSpec.BooleanValue ENABLE_COVER_PATH_VALIDATION;
-    public static ForgeConfigSpec.BooleanValue ENABLE_FALLBACK_EVASION;
-    public static ForgeConfigSpec.IntValue COVER_SEARCH_COOLDOWN_TICKS;
-    public static ForgeConfigSpec.IntValue COVER_RELAXED_EXTRA_RADIUS;
-    public static ForgeConfigSpec.IntValue FALLBACK_EVASION_RADIUS;
-    public static ForgeConfigSpec.IntValue COVER_SEARCH_MAX_CANDIDATES;
-    public static ForgeConfigSpec.IntValue COVER_SEARCH_MAX_PATH_CHECKS;
-    public static ForgeConfigSpec.IntValue COVER_SEARCHES_PER_TICK;
-    public static ForgeConfigSpec.IntValue COVER_SEARCH_BUDGET_JITTER_TICKS;
+    public static ModConfigSpec.BooleanValue ENABLE_SMART_COVER_SEARCH;
+    public static ModConfigSpec.BooleanValue ENABLE_COVER_PATH_VALIDATION;
+    public static ModConfigSpec.BooleanValue ENABLE_FALLBACK_EVASION;
+    public static ModConfigSpec.IntValue COVER_SEARCH_COOLDOWN_TICKS;
+    public static ModConfigSpec.IntValue COVER_RELAXED_EXTRA_RADIUS;
+    public static ModConfigSpec.IntValue FALLBACK_EVASION_RADIUS;
+    public static ModConfigSpec.IntValue COVER_SEARCH_MAX_CANDIDATES;
+    public static ModConfigSpec.IntValue COVER_SEARCH_MAX_PATH_CHECKS;
+    public static ModConfigSpec.IntValue COVER_SEARCHES_PER_TICK;
+    public static ModConfigSpec.IntValue COVER_SEARCH_BUDGET_JITTER_TICKS;
 
-    public static ForgeConfigSpec.BooleanValue ENABLE_TACTICAL_SUPPRESSION;
-    public static ForgeConfigSpec.DoubleValue SUPPRESSION_IMPACT_RADIUS;
-    public static ForgeConfigSpec.DoubleValue SUPPRESSION_IMPACT_AMOUNT;
-    public static ForgeConfigSpec.DoubleValue SUPPRESSION_DECAY_PER_TICK;
-    public static ForgeConfigSpec.DoubleValue SUPPRESSION_STRONG_THRESHOLD;
-    public static ForgeConfigSpec.DoubleValue SUPPRESSION_ACCURACY_SPREAD_PENALTY;
-    public static ForgeConfigSpec.IntValue SUPPRESSION_COVER_LOCK_TICKS;
-    public static ForgeConfigSpec.IntValue SUPPRESSION_SOURCE_DEBOUNCE_TICKS;
+    public static ModConfigSpec.BooleanValue ENABLE_TACTICAL_SUPPRESSION;
+    public static ModConfigSpec.DoubleValue SUPPRESSION_IMPACT_RADIUS;
+    public static ModConfigSpec.DoubleValue SUPPRESSION_IMPACT_AMOUNT;
+    public static ModConfigSpec.DoubleValue SUPPRESSION_DECAY_PER_TICK;
+    public static ModConfigSpec.DoubleValue SUPPRESSION_STRONG_THRESHOLD;
+    public static ModConfigSpec.DoubleValue SUPPRESSION_ACCURACY_SPREAD_PENALTY;
+    public static ModConfigSpec.IntValue SUPPRESSION_COVER_LOCK_TICKS;
+    public static ModConfigSpec.IntValue SUPPRESSION_SOURCE_DEBOUNCE_TICKS;
 
-    public static ForgeConfigSpec.BooleanValue ENABLE_TACTICAL_HEARING;
-    public static ForgeConfigSpec.DoubleValue GUNSHOT_HEARING_RADIUS;
-    public static ForgeConfigSpec.DoubleValue SOUND_MIN_STRENGTH;
-    public static ForgeConfigSpec.IntValue GUNSHOT_MEMORY_TICKS;
-    public static ForgeConfigSpec.DoubleValue SOUND_INVESTIGATE_SPEED;
-    public static ForgeConfigSpec.DoubleValue SOUND_INVESTIGATE_REACHED_DISTANCE;
+    public static ModConfigSpec.BooleanValue ENABLE_TACTICAL_HEARING;
+    public static ModConfigSpec.DoubleValue GUNSHOT_HEARING_RADIUS;
+    public static ModConfigSpec.DoubleValue SOUND_MIN_STRENGTH;
+    public static ModConfigSpec.IntValue GUNSHOT_MEMORY_TICKS;
+    public static ModConfigSpec.DoubleValue SOUND_INVESTIGATE_SPEED;
+    public static ModConfigSpec.DoubleValue SOUND_INVESTIGATE_REACHED_DISTANCE;
 
-    public static ForgeConfigSpec.BooleanValue ENABLE_TACTICAL_DECISION_LAYER;
-    public static ForgeConfigSpec.IntValue TACTICAL_DECISION_INTERVAL_TICKS;
-    public static ForgeConfigSpec.IntValue TACTICAL_DECISION_COVER_LOCK_TICKS;
-    public static ForgeConfigSpec.DoubleValue TACTICAL_RETREAT_PRESSURE_THRESHOLD;
-    public static ForgeConfigSpec.DoubleValue TACTICAL_COVER_PRESSURE_THRESHOLD;
-    public static ForgeConfigSpec.DoubleValue TACTICAL_PUSH_CONFIDENCE_THRESHOLD;
-    public static ForgeConfigSpec.BooleanValue ENABLE_SQUAD_CONTEXT;
-    public static ForgeConfigSpec.BooleanValue ENABLE_SQUAD_COMBAT_MEMORY;
-    public static ForgeConfigSpec.DoubleValue SQUAD_CONTEXT_RADIUS;
-    public static ForgeConfigSpec.DoubleValue SQUAD_MEMORY_SHARE_RADIUS;
-    public static ForgeConfigSpec.IntValue SQUAD_MEMORY_TICKS;
-    public static ForgeConfigSpec.IntValue SQUAD_MEMORY_GRID_SIZE;
-    public static ForgeConfigSpec.BooleanValue ENABLE_DISTANCE_TARGET_PRIORITY;
-    public static ForgeConfigSpec.DoubleValue CLOSE_THREAT_SWITCH_DISTANCE;
-    public static ForgeConfigSpec.DoubleValue CLOSE_THREAT_SWITCH_RATIO;
-    public static ForgeConfigSpec.IntValue CLOSE_THREAT_SWITCH_SCAN_INTERVAL_TICKS;
-    public static ForgeConfigSpec.BooleanValue ENABLE_SEM_LOOP_SPARK_PROFILING;
-    public static ForgeConfigSpec.IntValue SEM_LOOP_SPARK_WARMUP_TICKS;
+    public static ModConfigSpec.BooleanValue ENABLE_TACTICAL_DECISION_LAYER;
+    public static ModConfigSpec.IntValue TACTICAL_DECISION_INTERVAL_TICKS;
+    public static ModConfigSpec.IntValue TACTICAL_DECISION_COVER_LOCK_TICKS;
+    public static ModConfigSpec.DoubleValue TACTICAL_RETREAT_PRESSURE_THRESHOLD;
+    public static ModConfigSpec.DoubleValue TACTICAL_COVER_PRESSURE_THRESHOLD;
+    public static ModConfigSpec.DoubleValue TACTICAL_PUSH_CONFIDENCE_THRESHOLD;
+    public static ModConfigSpec.BooleanValue ENABLE_SQUAD_CONTEXT;
+    public static ModConfigSpec.BooleanValue ENABLE_SQUAD_COMBAT_MEMORY;
+    public static ModConfigSpec.DoubleValue SQUAD_CONTEXT_RADIUS;
+    public static ModConfigSpec.DoubleValue SQUAD_MEMORY_SHARE_RADIUS;
+    public static ModConfigSpec.IntValue SQUAD_MEMORY_TICKS;
+    public static ModConfigSpec.IntValue SQUAD_MEMORY_GRID_SIZE;
+    public static ModConfigSpec.BooleanValue ENABLE_DISTANCE_TARGET_PRIORITY;
+    public static ModConfigSpec.DoubleValue CLOSE_THREAT_SWITCH_DISTANCE;
+    public static ModConfigSpec.DoubleValue CLOSE_THREAT_SWITCH_RATIO;
+    public static ModConfigSpec.IntValue CLOSE_THREAT_SWITCH_SCAN_INTERVAL_TICKS;
+    public static ModConfigSpec.BooleanValue ENABLE_SEM_LOOP_SPARK_PROFILING;
+    public static ModConfigSpec.IntValue SEM_LOOP_SPARK_WARMUP_TICKS;
 
-    public static ForgeConfigSpec.BooleanValue ENABLE_SEM_TICK_PROFILER;
-    public static ForgeConfigSpec.BooleanValue ENABLE_SEM_TICK_SAMPLES;
-    public static ForgeConfigSpec.IntValue SEM_TICK_SAMPLE_INTERVAL_TICKS;
-    public static ForgeConfigSpec.DoubleValue SEM_TICK_WARN_THRESHOLD_MS;
-    public static ForgeConfigSpec.DoubleValue SEM_TICK_SEVERE_THRESHOLD_MS;
+    public static ModConfigSpec.BooleanValue ENABLE_SEM_TICK_PROFILER;
+    public static ModConfigSpec.BooleanValue ENABLE_SEM_TICK_SAMPLES;
+    public static ModConfigSpec.IntValue SEM_TICK_SAMPLE_INTERVAL_TICKS;
+    public static ModConfigSpec.DoubleValue SEM_TICK_WARN_THRESHOLD_MS;
+    public static ModConfigSpec.DoubleValue SEM_TICK_SEVERE_THRESHOLD_MS;
 
-    public static void init(ForgeConfigSpec.Builder builder) {
+    public static void init(ModConfigSpec.Builder builder) {
         builder.push("tactical_ai_phase_1");
 
         ENABLE_SOFT_OBSTACLE_BREAKING = builder

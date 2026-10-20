@@ -18,7 +18,7 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
 import net.nekoyuni.SimpleEnemyMod.config.common.UnitAttributesConfig;
@@ -149,12 +149,12 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
             groundNav.setCanOpenDoors(true);
         }
 
-        this.setPathfindingMalus(BlockPathTypes.LAVA, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.POWDER_SNOW, -1.0F);
+        this.setPathfindingMalus(PathType.LAVA, -1.0F);
+        this.setPathfindingMalus(PathType.DANGER_FIRE, -1.0F);
+        this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+        this.setPathfindingMalus(PathType.DANGER_OTHER, -1.0F);
+        this.setPathfindingMalus(PathType.DAMAGE_OTHER, -1.0F);
+        this.setPathfindingMalus(PathType.POWDER_SNOW, -1.0F);
     }
 
     @Override

@@ -20,7 +20,7 @@ public final class UnitFactionTags {
     }
 
     private static TagKey<EntityType<?>> create(String name) {
-        return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(SimpleEnemyMod.MODID, name));
+        return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(SimpleEnemyMod.MODID, name));
     }
 
     public static boolean isPmcUnit(Entity entity) {

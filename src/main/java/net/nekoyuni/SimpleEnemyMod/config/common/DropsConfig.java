@@ -1,14 +1,14 @@
 package net.nekoyuni.SimpleEnemyMod.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class DropsConfig {
 
-    public static ForgeConfigSpec.BooleanValue ENABLE_CUSTOM_DROPS;
-    public static ForgeConfigSpec.DoubleValue GUN_DROP_CHANCE;
-    public static ForgeConfigSpec.DoubleValue AMMO_DROP_CHANCE;
+    public static ModConfigSpec.BooleanValue ENABLE_CUSTOM_DROPS;
+    public static ModConfigSpec.DoubleValue GUN_DROP_CHANCE;
+    public static ModConfigSpec.DoubleValue AMMO_DROP_CHANCE;
 
-    public static void init(ForgeConfigSpec.Builder builder){
+    public static void init(ModConfigSpec.Builder builder){
         builder.push("Drops");
 
         ENABLE_CUSTOM_DROPS = builder

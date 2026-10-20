@@ -1,15 +1,15 @@
 package net.nekoyuni.SimpleEnemyMod.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class AiDifficultyConfig {
 
-    public static ForgeConfigSpec.EnumValue<AiDifficultyConfig.AIDifficulty> DIFFICULTY;
+    public static ModConfigSpec.EnumValue<AiDifficultyConfig.AIDifficulty> DIFFICULTY;
     public enum AIDifficulty {
         NORMAL, ADVANCED
     }
 
-    public static void init (ForgeConfigSpec.Builder builder){
+    public static void init (ModConfigSpec.Builder builder){
         builder.push("ai_difficulty");
 
         DIFFICULTY = builder

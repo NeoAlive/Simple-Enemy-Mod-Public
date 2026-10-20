@@ -1,19 +1,19 @@
 package net.nekoyuni.SimpleEnemyMod.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
 
-@Mod.EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class GeneralConfig {
 
-    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_VILLAGE_GARRISON_CONFIG;
+    public static ModConfigSpec.ConfigValue<Boolean> ENABLE_VILLAGE_GARRISON_CONFIG;
     public static boolean enableVillageGarrison = true;
 
-    public static void init(ForgeConfigSpec.Builder builder) {
+    public static void init(ModConfigSpec.Builder builder) {
         builder.push("general_settings");
 
         ENABLE_VILLAGE_GARRISON_CONFIG = builder

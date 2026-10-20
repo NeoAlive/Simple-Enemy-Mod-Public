@@ -60,7 +60,7 @@ public class NpcMuzzleFlashRenderer {
             return;
         }
 
-        ItemStack muzzleAttachment = iGun.getAttachment(gunStack, AttachmentType.MUZZLE);
+        ItemStack muzzleAttachment = iGun.getAttachment(entity.level().registryAccess(), gunStack, AttachmentType.MUZZLE);
         IAttachment iAttachment = IAttachment.getIAttachmentOrNull(muzzleAttachment);
         if (iAttachment != null) {
             ResourceLocation attachmentId = iAttachment.getAttachmentId(muzzleAttachment);
@@ -167,7 +167,7 @@ public class NpcMuzzleFlashRenderer {
         ps.mulPose(Axis.ZP.rotationDegrees(data.randomRotation));
         ps.translate(0.0f, -1.0f, 0.0f);
         FLASH_MODEL.renderToBuffer(ps, bufferSource.getBuffer(RenderType.entityTranslucent(muzzleFlash.getTexture())),
-                0xF000F0, 655360, 1.0f, 1.0f, 1.0f, 1.0f);
+                0xF000F0, 655360, -1);
         ps.popPose();
 
         ps.pushPose();
@@ -175,7 +175,7 @@ public class NpcMuzzleFlashRenderer {
         ps.mulPose(Axis.ZP.rotationDegrees(data.randomRotation));
         ps.translate(0.0, -0.9, 0.0);
         FLASH_MODEL.renderToBuffer(ps, bufferSource.getBuffer(RenderType.energySwirl(muzzleFlash.getTexture(), 1.0f, 1.0f)),
-                0xF000F0, 655360, 1.0f, 1.0f, 1.0f, 1.0f);
+                0xF000F0, 655360, -1);
         ps.popPose();
     }
 

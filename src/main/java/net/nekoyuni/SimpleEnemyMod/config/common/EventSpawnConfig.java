@@ -1,31 +1,31 @@
 package net.nekoyuni.SimpleEnemyMod.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class EventSpawnConfig {
 
-    public static ForgeConfigSpec.DoubleValue PATROL_BASE_CHANCE;
-    public static ForgeConfigSpec.DoubleValue PATROL_FAILURE_MULTIPLIER;
+    public static ModConfigSpec.DoubleValue PATROL_BASE_CHANCE;
+    public static ModConfigSpec.DoubleValue PATROL_FAILURE_MULTIPLIER;
 
-    public static ForgeConfigSpec.DoubleValue COMBAT_BASE_CHANCE;
-    public static ForgeConfigSpec.DoubleValue COMBAT_FAILURE_MULTIPLIER;
+    public static ModConfigSpec.DoubleValue COMBAT_BASE_CHANCE;
+    public static ModConfigSpec.DoubleValue COMBAT_FAILURE_MULTIPLIER;
 
-    public static ForgeConfigSpec.DoubleValue CAVE_BASE_CHANCE;
-    public static ForgeConfigSpec.DoubleValue CAVE_FAILURE_MULTIPLIER;
+    public static ModConfigSpec.DoubleValue CAVE_BASE_CHANCE;
+    public static ModConfigSpec.DoubleValue CAVE_FAILURE_MULTIPLIER;
 
-    public static ForgeConfigSpec.IntValue EVENT_GLOBAL_COOLDOWN_TICKS;
-    public static ForgeConfigSpec.IntValue EVENT_TICK_WINDOW;
+    public static ModConfigSpec.IntValue EVENT_GLOBAL_COOLDOWN_TICKS;
+    public static ModConfigSpec.IntValue EVENT_TICK_WINDOW;
 
-    public static ForgeConfigSpec.IntValue PATROL_MIN_SIZE;
-    public static ForgeConfigSpec.IntValue PATROL_MAX_SIZE;
+    public static ModConfigSpec.IntValue PATROL_MIN_SIZE;
+    public static ModConfigSpec.IntValue PATROL_MAX_SIZE;
 
-    public static ForgeConfigSpec.IntValue COMBAT_MIN_SIZE;
-    public static ForgeConfigSpec.IntValue COMBAT_MAX_SIZE;
+    public static ModConfigSpec.IntValue COMBAT_MIN_SIZE;
+    public static ModConfigSpec.IntValue COMBAT_MAX_SIZE;
 
-    public static ForgeConfigSpec.IntValue CAVE_MIN_SIZE;
-    public static ForgeConfigSpec.IntValue CAVE_MAX_SIZE;
+    public static ModConfigSpec.IntValue CAVE_MIN_SIZE;
+    public static ModConfigSpec.IntValue CAVE_MAX_SIZE;
 
-    public static void init(ForgeConfigSpec.Builder builder){
+    public static void init(ModConfigSpec.Builder builder){
 
         builder.push("event_spawn");
         builder.comment("--------------------------------------------------");

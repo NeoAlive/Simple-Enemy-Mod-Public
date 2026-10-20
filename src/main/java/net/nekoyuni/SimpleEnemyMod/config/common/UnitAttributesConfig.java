@@ -1,15 +1,15 @@
 package net.nekoyuni.SimpleEnemyMod.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class UnitAttributesConfig {
 
-    public static ForgeConfigSpec.DoubleValue UNIT_HEALTH;
-    public static ForgeConfigSpec.DoubleValue UNIT_ARMOR;
-    public static ForgeConfigSpec.DoubleValue UNIT_SPEED;
-    public static ForgeConfigSpec.DoubleValue UNIT_DETECTION_RANGE;
+    public static ModConfigSpec.DoubleValue UNIT_HEALTH;
+    public static ModConfigSpec.DoubleValue UNIT_ARMOR;
+    public static ModConfigSpec.DoubleValue UNIT_SPEED;
+    public static ModConfigSpec.DoubleValue UNIT_DETECTION_RANGE;
 
-    public static void init(ForgeConfigSpec.Builder builder){
+    public static void init(ModConfigSpec.Builder builder){
         builder.push("unit_attributes");
 
         UNIT_HEALTH = builder

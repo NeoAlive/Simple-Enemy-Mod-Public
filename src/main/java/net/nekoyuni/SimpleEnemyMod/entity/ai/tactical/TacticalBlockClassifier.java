@@ -99,7 +99,7 @@ public final class TacticalBlockClassifier {
     public static boolean isFragilePlantLike(BlockState state) {
         Block block = state.getBlock();
         String descriptionId = descriptionId(state);
-        return block == Blocks.GRASS
+        return block == Blocks.SHORT_GRASS
                 || block == Blocks.TALL_GRASS
                 || block == Blocks.FERN
                 || block == Blocks.LARGE_FERN
