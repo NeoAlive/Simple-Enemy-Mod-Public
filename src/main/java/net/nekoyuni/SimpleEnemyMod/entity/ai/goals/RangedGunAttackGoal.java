@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.entity.ai.goals;
 
+import net.nekoyuni.SimpleEnemyMod.api.SemUnitPredicates;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.api.item.IGun;
@@ -89,6 +90,7 @@ public class RangedGunAttackGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (SemUnitPredicates.isSmallArmsSuppressed(this.mob)) return false;
         LivingEntity currentTarget = this.mob.getTarget();
 
         if (currentTarget == null || !currentTarget.isAlive()) {
@@ -112,6 +114,7 @@ public class RangedGunAttackGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
+        if (SemUnitPredicates.isSmallArmsSuppressed(this.mob)) return false;
         return this.mob.getTarget() != null && this.mob.getTarget().isAlive() &&
                 this.mob.getMainHandItem().getItem() instanceof AbstractGunItem;
     }

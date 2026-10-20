@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.entity.ai.goals;
 
+import net.nekoyuni.SimpleEnemyMod.api.SemUnitPredicates;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -33,6 +34,7 @@ public class MoveToAttackRangeGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.mob)) return false;
         if (cooldownTicks > 0) {
             cooldownTicks--;
             return false;
@@ -59,6 +61,7 @@ public class MoveToAttackRangeGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.mob)) return false;
         if (target == null || !target.isAlive()) {
             return false;
         }

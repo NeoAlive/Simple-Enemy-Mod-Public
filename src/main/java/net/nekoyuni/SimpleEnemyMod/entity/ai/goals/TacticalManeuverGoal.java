@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.entity.ai.goals;
 
+import net.nekoyuni.SimpleEnemyMod.api.SemUnitPredicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -59,12 +60,14 @@ public class TacticalManeuverGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.unit)) return false;
         SoldierState state = unit.getSoldierState();
         return state == SoldierState.ENGAGE || state == SoldierState.TACTICAL_MOV;
     }
 
     @Override
     public boolean canContinueToUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.unit)) return false;
         if (unit.isMovementLockedByManager()) {
             return false;
         }

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.nekoyuni.SimpleEnemyMod.api.internal.SemHooks;
 import net.nekoyuni.SimpleEnemyMod.procedural.events.system.ChunkSafetyEvaluator;
 import net.nekoyuni.SimpleEnemyMod.procedural.events.system.DynamicEvent;
 import net.nekoyuni.SimpleEnemyMod.procedural.events.system.EventCooldownManager;
@@ -89,7 +90,9 @@ public class DynamicEventManager {
         }
 
         if (RANDOM.nextDouble() < finalChance) {
-            boolean success = event.execute(level, player, targetPos);
+            boolean success = !SemHooks.preDynamicEvent(level, player, event, targetPos)
+                    && event.execute(level, player, targetPos);
+            SemHooks.postDynamicEvent(level, player, event, targetPos, success);
 
             if (success) {
                 Map<String, Double> bases = new HashMap<>();
@@ -123,7 +126,9 @@ public class DynamicEventManager {
                 player, event.getMinDistance(), event.getMaxDistance(), level
         );
 
-        boolean success = event.execute(level, player, targetPos);
+        boolean success = !SemHooks.preDynamicEvent(level, player, event, targetPos)
+                && event.execute(level, player, targetPos);
+        SemHooks.postDynamicEvent(level, player, event, targetPos, success);
         if (success) {
             EventProbabilityData.get(level).resetChance(eventId, player.getUUID().toString(), event.getBaseChance());
         }

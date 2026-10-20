@@ -26,19 +26,19 @@ public class ModNetworking {
         registrar.playToClient(
                 PacketPlayImpactSound.TYPE,
                 PacketPlayImpactSound.STREAM_CODEC,
-                PacketPlayImpactSound::handleClient
+                PacketPlayImpactSound::handle
         );
 
         registrar.playToServer(
                 PacketIssueOrder.TYPE,
                 PacketIssueOrder.STREAM_CODEC,
-                PacketIssueOrder::handleServer
+                PacketIssueOrder::handle
         );
 
         registrar.playToClient(
                 PacketSuppression.TYPE,
                 PacketSuppression.STREAM_CODEC,
-                PacketSuppression::handleClient
+                PacketSuppression::handle
         );
 
         LOGGER.info("[SEM] Network payloads registered. Protocol version: {}", PROTOCOL_VERSION);

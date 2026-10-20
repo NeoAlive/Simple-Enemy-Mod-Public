@@ -48,7 +48,7 @@ public record PacketPlayImpactSound(
         return TYPE;
     }
 
-    public static void handleClient(PacketPlayImpactSound msg, IPayloadContext context) {
+    public static void handle(PacketPlayImpactSound msg, IPayloadContext context) {
         context.enqueueWork(() -> ClientPacketHandler.handleImpactSound(msg));
     }
 }

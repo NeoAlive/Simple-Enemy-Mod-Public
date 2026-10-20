@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.event.common;
 
+import net.nekoyuni.SimpleEnemyMod.api.internal.SemHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -104,6 +105,8 @@ public class VillageGarrisonHandler {
     }
 
     private static void spawnGuard(ServerLevel level, BlockPos basePos, boolean isRu) {
+        if (SemHooks.onGarrisonSpawn(level, basePos, isRu)) return;
+
         double dx = (level.random.nextDouble() - 0.5) * 8;
         double dz = (level.random.nextDouble() - 0.5) * 8;
         BlockPos spawnPos = basePos.offset((int)dx, 0, (int)dz);

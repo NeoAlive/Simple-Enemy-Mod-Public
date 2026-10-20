@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.entity.ai.goals;
 
+import net.nekoyuni.SimpleEnemyMod.api.SemUnitPredicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -66,6 +67,7 @@ public class SeekCoverGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.unit)) return false;
         if (!unit.isMovementLockedByManager()) {
             return false;
         }
@@ -167,6 +169,7 @@ public class SeekCoverGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.unit)) return false;
         if (this.targetPosition == null) {
             this.abortedByManager = true;
             this.abortReason = "missing_target_position";

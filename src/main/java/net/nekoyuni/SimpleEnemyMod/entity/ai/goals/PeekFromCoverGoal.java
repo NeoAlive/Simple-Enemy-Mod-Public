@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.entity.ai.goals;
 
+import net.nekoyuni.SimpleEnemyMod.api.SemUnitPredicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -41,6 +42,7 @@ public class PeekFromCoverGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.unit)) return false;
         if (unit.getSoldierState() != SoldierState.HOLD_COVER) return false;
 
         LivingEntity target = mob.getTarget();
@@ -74,6 +76,7 @@ public class PeekFromCoverGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.unit)) return false;
         if (unit.getSoldierState() != SoldierState.HOLD_COVER) return false;
 
         return peekTicks < MAX_PEEK_TICKS;

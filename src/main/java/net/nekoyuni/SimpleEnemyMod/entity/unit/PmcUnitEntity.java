@@ -35,6 +35,8 @@ import net.nekoyuni.SimpleEnemyMod.inventory.PmcUnitMenu;
 import net.nekoyuni.SimpleEnemyMod.inventory.UnitInventoryHandler;
 
 import javax.annotation.Nullable;
+import net.nekoyuni.SimpleEnemyMod.api.internal.SemHooks;
+import net.neoforged.neoforge.common.util.TriState;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -244,6 +246,8 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
                 UnitRole.FRIENDLY_DEFAULT.getGoals().addGoals(this);
                 break;
         }
+
+        SemHooks.onGoalsSetup(this, this.goalSelector, this.targetSelector);
     }
 
     @Override
@@ -334,7 +338,11 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
     // patch: prevent entity returns fire
     @Override
     public void setTarget(@Nullable LivingEntity target) {
-        if (target instanceof Player || (target != null && UnitFactionTags.isFriendlyToPmc(target))) {
+        TriState hook = SemHooks.preSetTarget(this, target);
+        if (hook.isFalse()) {
+            return;
+        }
+        if (hook.isDefault() && (target instanceof Player || (target != null && UnitFactionTags.isFriendlyToPmc(target)))) {
             return;
         }
         super.setTarget(target);
@@ -361,7 +369,9 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
 
     // OWNER GETTERS AND SETTERS
     public void setOwner(UUID uuid) {
+        UUID oldOwner = this.getOwnerUUID();
         this.entityData.set(OWNER_UUID, Optional.ofNullable(uuid));
+        SemHooks.onOwnerChanged(this, oldOwner, uuid);
     }
 
     public UUID getOwnerUUID() {

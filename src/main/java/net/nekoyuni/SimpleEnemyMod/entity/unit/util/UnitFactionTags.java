@@ -7,7 +7,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.common.util.TriState;
 import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
+import net.nekoyuni.SimpleEnemyMod.api.faction.SemFactionRelations;
 import net.nekoyuni.SimpleEnemyMod.config.common.FactionsConfig;
 
 public final class UnitFactionTags {
@@ -44,6 +46,11 @@ public final class UnitFactionTags {
             return false;
         }
 
+        TriState override = SemFactionRelations.resolveNpcFriendliness(npc, other);
+        if (!override.isDefault()) {
+            return override.isTrue();
+        }
+
         if (isUsUnit(npc)) {
             return isFriendlyToUs(other);
         }
@@ -72,6 +79,11 @@ public final class UnitFactionTags {
     public static boolean isFriendlyFire(Entity victim, Entity attacker) {
         if (victim == null || attacker == null || victim == attacker) {
             return false;
+        }
+
+        TriState override = SemFactionRelations.resolveFriendlyFire(victim, attacker);
+        if (!override.isDefault()) {
+            return override.isTrue();
         }
 
         if (isSameTaggedFaction(victim, attacker)) {

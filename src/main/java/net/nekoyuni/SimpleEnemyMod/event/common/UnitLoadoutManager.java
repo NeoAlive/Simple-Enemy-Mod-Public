@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.event.common;
 
+import net.nekoyuni.SimpleEnemyMod.api.internal.SemHooks;
 import com.google.gson.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -33,6 +34,8 @@ public class UnitLoadoutManager extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+        SemHooks.onLoadoutsLoading(pObject);
+
         Map<String, List<UnitLoadout>> tempLoadoutsByFaction = new HashMap<>();
 
         for (Map.Entry<ResourceLocation, JsonElement> entry : pObject.entrySet()) {

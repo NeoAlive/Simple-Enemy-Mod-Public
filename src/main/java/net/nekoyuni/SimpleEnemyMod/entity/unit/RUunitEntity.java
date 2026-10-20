@@ -1,6 +1,8 @@
 package net.nekoyuni.SimpleEnemyMod.entity.unit;
 
 import javax.annotation.Nullable;
+import net.nekoyuni.SimpleEnemyMod.api.internal.SemHooks;
+import net.neoforged.neoforge.common.util.TriState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.*;
@@ -125,11 +127,17 @@ public class RUunitEntity extends AbstractUnit {
                 UnitRole.DEFAULT.getGoals().addGoals(this);
                 break;
         }
+
+        SemHooks.onGoalsSetup(this, this.goalSelector, this.targetSelector);
     }
 
     @Override
     public void setTarget(@Nullable LivingEntity target) {
-        if (target != null && UnitFactionTags.isFriendlyToNpcFaction(this, target)) {
+        TriState hook = SemHooks.preSetTarget(this, target);
+        if (hook.isFalse()) {
+            return;
+        }
+        if (hook.isDefault() && target != null && UnitFactionTags.isFriendlyToNpcFaction(this, target)) {
             return;
         }
         super.setTarget(target);

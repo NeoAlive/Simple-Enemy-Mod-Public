@@ -1,5 +1,6 @@
 package net.nekoyuni.SimpleEnemyMod.entity.ai.goals;
 
+import net.nekoyuni.SimpleEnemyMod.api.SemUnitPredicates;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 import net.nekoyuni.SimpleEnemyMod.config.common.TacticalAiConfig;
@@ -22,6 +23,7 @@ public class TacticalInvestigateSoundGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.unit)) return false;
         return TacticalAiConfig.enableTacticalHearing()
                 && this.unit.hasHeardThreat()
                 && this.unit.getTarget() == null;
@@ -29,6 +31,7 @@ public class TacticalInvestigateSoundGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
+        if (SemUnitPredicates.isOnFootMovementSuppressed(this.unit)) return false;
         return this.canUse();
     }
 

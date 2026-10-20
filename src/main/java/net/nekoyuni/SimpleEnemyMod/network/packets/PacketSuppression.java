@@ -23,7 +23,7 @@ public record PacketSuppression(float amount) implements CustomPacketPayload {
         return TYPE;
     }
 
-    public static void handleClient(PacketSuppression msg, IPayloadContext context) {
+    public static void handle(PacketSuppression msg, IPayloadContext context) {
         context.enqueueWork(() -> ClientPacketHandler.handleSuppression(msg));
     }
 }

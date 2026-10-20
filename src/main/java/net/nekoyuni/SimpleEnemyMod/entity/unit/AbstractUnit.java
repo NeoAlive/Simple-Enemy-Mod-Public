@@ -38,6 +38,7 @@ import net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.util.UnitFactionTags;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.util.StrategyType;
 
+import net.nekoyuni.SimpleEnemyMod.api.internal.SemHooks;
 import net.nekoyuni.SimpleEnemyMod.scenario.SemScenarioRuntimeManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -391,6 +392,8 @@ public abstract class AbstractUnit extends Monster implements IRoleHolder, IAnim
                 this.lastAlertSoundTick = this.tickCount;
             }
         }
+
+        SemHooks.postSetTarget(this, oldTarget, this.getTarget());
     }
 
     @Override
