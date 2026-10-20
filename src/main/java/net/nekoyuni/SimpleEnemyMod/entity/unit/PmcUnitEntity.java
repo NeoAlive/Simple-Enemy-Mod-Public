@@ -14,7 +14,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,12 +25,15 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
+import net.nekoyuni.SimpleEnemyMod.config.common.FactionsConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.AttackSpecificTargetGoal;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.CommanderOrderGoal;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.NoPlayerHurtByTargetGoal;
+import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.VerticalAwareTargetGoal;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.orders.ICommandableMob;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.util.UnitFactionTags;
 import net.nekoyuni.SimpleEnemyMod.entity.equipment.PmcUnitWeaponEquipper;
 import net.nekoyuni.SimpleEnemyMod.inventory.PmcUnitMenu;
 import net.nekoyuni.SimpleEnemyMod.inventory.UnitInventoryHandler;
@@ -191,6 +193,8 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
     @Override
     public void setupRoleGoals() {
 
+        double vRange = 32.0; // Add to the config value
+
         this.goalSelector.removeAllGoals(pGoal -> true);
         this.targetSelector.removeAllGoals(pGoal -> true);
 
@@ -205,36 +209,49 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
         java.util.function.Predicate<LivingEntity> fireFilter = (target) -> this.isFireAllowed();
 
 
-        this.targetSelector.addGoal(1, new NoPlayerHurtByTargetGoal(this).setAlertOthers().setUnseenMemoryTicks(600));
+        this.targetSelector.addGoal(1, new NoPlayerHurtByTargetGoal(
+                this).setAlertOthers().setUnseenMemoryTicks(600));
 
-        if (!CommonConfig.US_UNITS_FRIENDLY.get()) {
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, USunitEntity.class, true, fireFilter).setUnseenMemoryTicks(800));
+        // Friendlies
+        if (!FactionsConfig.US_UNITS_FRIENDLY.get()) {
+            this.targetSelector.addGoal(2, new VerticalAwareTargetGoal<>(
+                    this, LivingEntity.class, true, vRange,
+                    (target) -> fireFilter.test(target) && UnitFactionTags.isUsUnit(target)).setUnseenMemoryTicks(800));
         }
 
-        if (!CommonConfig.RU_UNITS_FRIENDLY.get()) {
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, RUunitEntity.class, true, fireFilter).setUnseenMemoryTicks(800));
+        if (!FactionsConfig.RU_UNITS_FRIENDLY.get()) {
+            this.targetSelector.addGoal(2, new VerticalAwareTargetGoal<>(
+                    this, LivingEntity.class, true, vRange,
+                    (target) -> fireFilter.test(target) && UnitFactionTags.isRuUnit(target)).setUnseenMemoryTicks(800));
         }
 
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Zombie.class, true, fireFilter));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Skeleton.class, true, fireFilter));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractIllager.class, true, fireFilter));
+        // Normal Goals
+        this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
+                this, Zombie.class, true, vRange, fireFilter));
 
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true, (target) -> {
+        this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
+                this, Skeleton.class, true, vRange, fireFilter));
 
-            if (target.getClass() == this.getClass()) {
+        this.targetSelector.addGoal(3, new VerticalAwareTargetGoal<>(
+                this, AbstractIllager.class, true, vRange, fireFilter));
+
+        this.targetSelector.addGoal(2, new VerticalAwareTargetGoal<>(
+                this, Monster.class, true, vRange, (target) -> {
+
+            if (!fireFilter.test(target)) {
                 return false;
             }
 
-            if (CommonConfig.RU_UNITS_FRIENDLY.get() && target instanceof RUunitEntity) {
+            if (UnitFactionTags.isFriendlyToPmc(target)) {
                 return false;
             }
 
-            if (CommonConfig.US_UNITS_FRIENDLY.get() && target instanceof USunitEntity) {
-                return false;
+            if (UnitFactionTags.isTaggedUnit(target)) {
+                return true;
             }
 
             if (target instanceof AbstractUnit) {
-                return true;
+                return !UnitFactionTags.isSameTaggedFaction(this, target);
             }
 
             return target instanceof Enemy;
@@ -345,6 +362,21 @@ public class PmcUnitEntity extends AbstractUnit implements ICommandableMob {
         } catch (IllegalArgumentException e) {
             return UnitRole.FRIENDLY_DEFAULT;
         }
+    }
+
+    @Override
+    public boolean isPreventingPlayerRest(Player player) {
+        return false;
+    }
+
+    // patch: prevent entity returns fire
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if (target instanceof Player) {
+            super.setTarget(null);
+            return;
+        }
+        super.setTarget(target);
     }
 
     // GETTERS AND SETTERS FOR ORDERS

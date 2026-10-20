@@ -117,6 +117,7 @@ public class PmcUnitRenderer extends MobRenderer<PmcUnitEntity, PmcUnitModel<Pmc
     }
 
     private static void reloadTextures(ResourceManager rm) {
+
         List<ResourceLocation> found = new ArrayList<>();
         rm.listResources("textures/entity/pmc_unit", path -> path.getPath().endsWith(".png"))
                 .keySet().forEach(found::add);

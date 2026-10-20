@@ -7,17 +7,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
+import net.nekoyuni.SimpleEnemyMod.config.common.TacticalAiConfig;
+import net.nekoyuni.SimpleEnemyMod.entity.ai.awareness.CombatSoundAwarenessManager;
+import net.nekoyuni.SimpleEnemyMod.entity.ai.suppression.CombatSuppressionManager;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.util.UnitFactionTags;
 import net.nekoyuni.SimpleEnemyMod.spawn.TacticalReactionManager;
 
 import java.util.List;
 
 @Mod.EventBusSubscriber
 public class BulletImpactEventHandler {
-
-    private static final double SUPPRESSION_RADIUS = 7.0D;
 
     @SubscribeEvent
     public static void onBulletHitBlock(AmmoHitBlockEvent event) {
@@ -29,13 +32,20 @@ public class BulletImpactEventHandler {
             return;
         }
 
-        double x = event.getHitResult().getLocation().x;
-        double y = event.getHitResult().getLocation().y;
-        double z = event.getHitResult().getLocation().z;
+        Vec3 impactPos = event.getHitResult().getLocation();
+        double x = impactPos.x;
+        double y = impactPos.y;
+        double z = impactPos.z;
+        double radius = TacticalAiConfig.suppressionImpactRadius();
+
+        CombatSuppressionManager.emitGunfireSuppression(event.getLevel(), shooter, impactPos, radius);
+        if (!(shooter instanceof AbstractUnit)) {
+            CombatSoundAwarenessManager.emitGunshot(event.getLevel(), shooter, shooter.position(), TacticalAiConfig.gunshotHearingRadius());
+        }
 
         AABB impactBox = new AABB(
-                x - SUPPRESSION_RADIUS, y - SUPPRESSION_RADIUS, z - SUPPRESSION_RADIUS,
-                x + SUPPRESSION_RADIUS, y + SUPPRESSION_RADIUS, z + SUPPRESSION_RADIUS
+                x - radius, y - radius, z - radius,
+                x + radius, y + radius, z + radius
         );
 
         List<PathfinderMob> nearbyNPCs = event.getLevel().getEntitiesOfClass(PathfinderMob.class, impactBox);
@@ -43,14 +53,9 @@ public class BulletImpactEventHandler {
         for (PathfinderMob npc : nearbyNPCs) {
 
             if (!npc.isAlive() || npc == shooter) continue;
+            if (!(npc instanceof AbstractUnit)) continue;
+            if (UnitFactionTags.isFriendlyFire(npc, shooter)) continue;
 
-            if (npc.getClass() == shooter.getClass()) {
-                continue;
-            }
-
-            if (npc instanceof PmcUnitEntity && shooter instanceof Player) {
-                continue;
-            }
 
             if (npc.getTarget() == null) {
 

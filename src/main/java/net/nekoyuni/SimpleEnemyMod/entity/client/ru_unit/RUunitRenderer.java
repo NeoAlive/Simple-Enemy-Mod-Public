@@ -11,6 +11,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Mth;
 import net.nekoyuni.SimpleEnemyMod.config.ClientConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.client.GunLayerRenderer;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity;
 import org.joml.Quaternionf;
@@ -101,6 +102,7 @@ public class RUunitRenderer extends MobRenderer<RUunitEntity, RUunitModel<RUunit
     }
 
     private static void reloadTextures(ResourceManager rm) {
+
         List<ResourceLocation> found = new ArrayList<>();
         rm.listResources("textures/entity/ru_unit", path -> path.getPath().endsWith(".png"))
                 .keySet().forEach(found::add);
