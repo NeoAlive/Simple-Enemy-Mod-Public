@@ -9,7 +9,7 @@ import net.nekoyuni.SimpleEnemyMod.registry.ModEntities;
 
 // NeoForge replacement for the Forge ITEM_HANDLER capability PmcUnitEntity exposed via getCapability.
 // TaCZ's reload and addons (e.g. tacz_sewv) read the PMC inventory through this capability.
-// RU/US units intentionally have no item handler, as in upstream.
+// RU/US keep NeoForge's fallback equipment wrapper (hands + armour), like Forge's LivingEntity did upstream.
 @EventBusSubscriber(modid = SimpleEnemyMod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class CapabilityRegistrationHandler {
 
