@@ -9,8 +9,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
-import net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity;
-import net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity;
+import net.nekoyuni.SimpleEnemyMod.config.common.EffectConfig;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.util.UnitFactionTags;
 import net.nekoyuni.SimpleEnemyMod.network.ModNetworking;
 import net.nekoyuni.SimpleEnemyMod.network.packets.PacketSuppression;
 
@@ -22,7 +22,7 @@ public class PlayerSuppressionEventHandler {
     @SubscribeEvent
     public static void onAmmoHitBlock(AmmoHitBlockEvent event) {
 
-        if (!CommonConfig.ENABLE_SUPPRESSION.get()) {
+        if (!EffectConfig.ENABLE_SUPPRESSION.get()) {
             return;
         }
 
@@ -31,8 +31,7 @@ public class PlayerSuppressionEventHandler {
         Entity shooter = event.getAmmo().getOwner();
         if (shooter == null) return;
 
-        boolean isEnemy = (shooter instanceof RUunitEntity) ||
-                (shooter instanceof USunitEntity);
+        boolean isEnemy = UnitFactionTags.isRuUnit(shooter) || UnitFactionTags.isUsUnit(shooter);
 
         if (!isEnemy) {
             return;

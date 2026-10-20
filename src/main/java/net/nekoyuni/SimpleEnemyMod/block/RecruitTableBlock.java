@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
+import net.nekoyuni.SimpleEnemyMod.config.common.MiscConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
 import net.nekoyuni.SimpleEnemyMod.registry.ModEntities;
 
@@ -58,11 +60,15 @@ public class RecruitTableBlock extends HorizontalDirectionalBlock {
             return InteractionResult.SUCCESS;
         }
 
-        ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+        Item requiredItem = MiscConfig.getRecruitItem();
+        int requiredAmount = MiscConfig.RECRUIT_PRICE.get();
 
-        if (itemInHand.getItem() != Items.EMERALD || itemInHand.getCount() < 16) {
+        ItemStack itemInHand = player.getItemInHand(hand);
+
+        if (itemInHand.getItem() != requiredItem || itemInHand.getCount() < requiredAmount) {
             player.displayClientMessage(
-                    Component.literal("You need 16 or more emeralds to recruit a PMC!!"),
+                    Component.literal("You need " + requiredAmount + " " +
+                            requiredItem.getDescription().getString() + " to recruit a PMC!!"),
                     true
             );
             return InteractionResult.FAIL;
@@ -73,7 +79,7 @@ public class RecruitTableBlock extends HorizontalDirectionalBlock {
             return InteractionResult.FAIL;
         }
 
-        itemInHand.shrink(16);
+        itemInHand.shrink(requiredAmount);
 
         unit.moveTo(
                 pos.getX() + 0.5,

@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.MobSpawnType;
-import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
+import net.nekoyuni.SimpleEnemyMod.config.common.EventSpawnConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity;
@@ -22,12 +22,12 @@ public class PatrolEvent extends DynamicEvent {
 
     @Override
     public double getBaseChance() {
-        return CommonConfig.PATROL_BASE_CHANCE.get();
+        return EventSpawnConfig.PATROL_BASE_CHANCE.get();
     }
 
     @Override
     public double getFailureMultiplier() {
-        return CommonConfig.PATROL_FAILURE_MULTIPLIER.get();
+        return EventSpawnConfig.PATROL_FAILURE_MULTIPLIER.get();
     }
 
     @Override
@@ -62,8 +62,11 @@ public class PatrolEvent extends DynamicEvent {
             return false;
         }
 
+        int min = EventSpawnConfig.PATROL_MIN_SIZE.get();
+        int max = EventSpawnConfig.PATROL_MAX_SIZE.get();
+
         boolean isRuFaction = level.random.nextBoolean();
-        int squadSize = 3 + level.random.nextInt(2);
+        int squadSize = min + level.random.nextInt(Math.max(1, max - min + 1));
 
         for (int i = 0; i < squadSize; i++) {
             spawnSoldier(level, pos, isRuFaction, false);

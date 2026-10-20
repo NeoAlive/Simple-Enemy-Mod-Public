@@ -32,6 +32,7 @@ public class ClothConfigScreenHelper {
         AiDifficultyClothConfig.setup(builder, entryBuilder);
         FactionClothConfig.setup(builder, entryBuilder);
         AiShootingClothConfig.setup(builder, entryBuilder);
+        AiTacticalClothConfig.setup(builder, entryBuilder);
 
         SpawnClothConfig.setup(builder, entryBuilder);
         SpawnEventClothConfig.setup(builder, entryBuilder);

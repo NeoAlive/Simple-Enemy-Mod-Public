@@ -11,10 +11,11 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.nekoyuni.SimpleEnemyMod.SimpleEnemyMod;
-import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.nekoyuni.SimpleEnemyMod.config.common.DropsConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
 
@@ -28,13 +29,18 @@ public class UnitDropsHandler {
 
         // Always strip equipped/inventory guns. US/RU guns carry dummy ammo (~9999) for AI
         // infinite fire; falling through to vanilla Mob equipment drops leaks those stacks.
-        // Disabling custom drops previously returned early and allowed exactly that.
-        ItemStack sourceGun = findGunStack(unit);
         event.getDrops().removeIf(itemEntity ->
                 IGun.getIGunOrNull(itemEntity.getItem()) != null
         );
 
-        if (!CommonConfig.ENABLE_CUSTOM_DROPS.get()) return;
+        if (unit instanceof PmcUnitEntity pmcUnit && pmcUnit.getOwnerUUID() != null) {
+            dropPmcWeapon(pmcUnit, event);
+            return;
+        }
+
+        if (!DropsConfig.ENABLE_CUSTOM_DROPS.get()) return;
+
+        ItemStack sourceGun = findGunStack(unit);
         if (sourceGun.isEmpty()) return;
 
         IGun iGun = IGun.getIGunOrNull(sourceGun);
@@ -50,7 +56,7 @@ public class UnitDropsHandler {
 
         if (ammoId == null) return;
 
-        if (unit.getRandom().nextFloat() <= CommonConfig.GUN_DROP_CHANCE.get()) {
+        if (unit.getRandom().nextFloat() <= DropsConfig.GUN_DROP_CHANCE.get()) {
 
             int maxAmmo = TimelessAPI.getCommonGunIndex(gunId)
                     .map(index -> index.getGunData().getAmmoAmount())
@@ -82,7 +88,7 @@ public class UnitDropsHandler {
 
         }
 
-        if (unit.getRandom().nextFloat() <= CommonConfig.AMMO_DROP_CHANCE.get()) {
+        if (unit.getRandom().nextFloat() <= DropsConfig.AMMO_DROP_CHANCE.get()) {
 
             int ammoCount = 10 + unit.getRandom().nextInt(21);
             ItemStack ammoDrop = AmmoItemBuilder.create()
@@ -99,18 +105,44 @@ public class UnitDropsHandler {
 
 
     private static ItemStack findGunStack(AbstractUnit unit) {
-        if (unit instanceof PmcUnitEntity pmcUnit) {
-            ItemStack stack = pmcUnit.getInventory().getStackInSlot(0);
-            if (IGun.getIGunOrNull(stack) != null) {
-                return stack;
+        ItemStack[] result = { ItemStack.EMPTY };
+
+        IItemHandler handler = unit.getCapability(Capabilities.ItemHandler.ENTITY, null);
+        if (handler != null) {
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (IGun.getIGunOrNull(stack) != null) {
+                    result[0] = stack;
+                    break;
+                }
             }
         }
+
+        if (!result[0].isEmpty()) return result[0];
 
         ItemStack mainHand = unit.getMainHandItem();
         if (IGun.getIGunOrNull(mainHand) != null) {
             return mainHand;
         }
 
+        ItemStack offHand = unit.getOffhandItem();
+        if (IGun.getIGunOrNull(offHand) != null) {
+            return offHand;
+        }
+
         return ItemStack.EMPTY;
+    }
+
+    private static void dropPmcWeapon(PmcUnitEntity pmcUnit, LivingDropsEvent event) {
+
+        ItemStack sourceGun = findGunStack(pmcUnit);
+        if (sourceGun.isEmpty()) return;
+
+        ItemEntity gunEntity = new ItemEntity(
+                pmcUnit.level(),
+                pmcUnit.getX(), pmcUnit.getY(), pmcUnit.getZ(),
+                sourceGun.copy()
+        );
+        event.getDrops().add(gunEntity);
     }
 }

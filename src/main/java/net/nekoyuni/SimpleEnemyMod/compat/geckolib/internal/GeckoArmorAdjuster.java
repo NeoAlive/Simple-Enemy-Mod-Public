@@ -12,8 +12,8 @@ public class GeckoArmorAdjuster {
     private static final float SCALE_HEAD = 1.0F;
     private static final float SCALE_BODY = 1.0F;
     private static final float SCALE_ARMS = 1.04F;
-    private static final float SCALE_LEGS = 1.08F;
-    private static final float SCALE_BOOTS = 1.0F;
+    private static final float SCALE_LEGS = 1.15F;
+    private static final float SCALE_BOOTS = 1.20F;
 
     private static final float OFF_HEAD_X = 0.0F;
     private static final float OFF_HEAD_Y = 6.00F;
@@ -31,21 +31,23 @@ public class GeckoArmorAdjuster {
     private static final float OFF_ARM_LEFT_Y = 5.90F;
     private static final float OFF_ARM_LEFT_Z = -1.65F;
 
-    private static final float OFF_LEG_RIGHT_X = 0.10F;
-    private static final float OFF_LEG_RIGHT_Y = 5.98F;
-    private static final float OFF_LEG_RIGHT_Z = -0.5F;
+    // Legs and Boots
+    private static final float OFF_LEG_RIGHT_X = -0.25F; // pos izquierda, neg derecha
+    private static final float OFF_LEG_RIGHT_Y = 5.50F; // altura
+    private static final float OFF_LEG_RIGHT_Z = -0.45F; // hacia adelante o atras
 
-    private static final float OFF_LEG_LEFT_X = -0.10F;
+    private static final float OFF_LEG_LEFT_X = 0.10F;
     private static final float OFF_LEG_LEFT_Y = 5.98F;
     private static final float OFF_LEG_LEFT_Z = -0.5F;
 
+    // Boots
     private static final float OFF_BOOT_RIGHT_X = 0.25F;
     private static final float OFF_BOOT_RIGHT_Y = 7.0F;
-    private static final float OFF_BOOT_RIGHT_Z = -1.2F;
+    private static final float OFF_BOOT_RIGHT_Z = -0.25F;
 
     private static final float OFF_BOOT_LEFT_X = -0.25F;
     private static final float OFF_BOOT_LEFT_Y = 7.0F;
-    private static final float OFF_BOOT_LEFT_Z = -1.2F;
+    private static final float OFF_BOOT_LEFT_Z = -0.65F;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void applyAdjustments(GeoArmorRenderer<?> renderer, HumanoidModel<?> baseModel, EquipmentSlot slot) {

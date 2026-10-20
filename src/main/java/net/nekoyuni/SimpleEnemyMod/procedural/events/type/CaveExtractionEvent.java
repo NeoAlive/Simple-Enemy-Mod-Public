@@ -5,10 +5,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.MobSpawnType;
 import net.nekoyuni.SimpleEnemyMod.config.CommonConfig;
+import net.nekoyuni.SimpleEnemyMod.config.common.EventSpawnConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity;
 import net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole;
+import net.nekoyuni.SimpleEnemyMod.procedural.events.system.ChunkSafetyEvaluator;
 import net.nekoyuni.SimpleEnemyMod.procedural.events.system.DynamicEvent;
 import net.nekoyuni.SimpleEnemyMod.registry.ModEntities;
 
@@ -20,22 +22,22 @@ public class CaveExtractionEvent extends DynamicEvent {
 
     @Override
     public double getBaseChance() {
-        return CommonConfig.CAVE_BASE_CHANCE.get();
+        return EventSpawnConfig.CAVE_BASE_CHANCE.get();
     }
 
     @Override
     public double getFailureMultiplier() {
-        return CommonConfig.CAVE_FAILURE_MULTIPLIER.get();
+        return EventSpawnConfig.CAVE_FAILURE_MULTIPLIER.get();
     }
 
     @Override
     public int getMinDistance() {
-        return 15;
+        return 30;
     }
 
     @Override
     public int getMaxDistance() {
-        return 35;
+        return 60;
     }
 
     @Override
@@ -50,9 +52,15 @@ public class CaveExtractionEvent extends DynamicEvent {
         if (cavePos == null) {
             return false;
         }
+        if (ChunkSafetyEvaluator.isPlayerBase(level, cavePos)) {
+            return false;
+        }
+
+        int min = EventSpawnConfig.CAVE_MIN_SIZE.get();
+        int max = EventSpawnConfig.CAVE_MAX_SIZE.get();
 
         boolean isRu = level.random.nextBoolean();
-        int squadSize = 2 + level.random.nextInt(3);
+        int squadSize = min + level.random.nextInt(Math.max(1, max - min + 1));
 
         for (int i = 0; i < squadSize; i++) {
             spawnCaveUnit(level, cavePos, isRu);
@@ -62,31 +70,35 @@ public class CaveExtractionEvent extends DynamicEvent {
     }
 
     private BlockPos findCaveFloorNearPlayer(ServerLevel level, ServerPlayer player) {
-        int radius = getMaxDistance();
+        int minDist = getMinDistance();
+        int maxDist = getMaxDistance();
 
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 20; i++) {
+            double angle = level.random.nextDouble() * Math.PI * 2;
+            int dist = minDist + level.random.nextInt(maxDist - minDist);
 
-            int x = player.getBlockX() + level.random.nextInt(radius * 2) - radius;
-            int z = player.getBlockZ() + level.random.nextInt(radius * 2) - radius;
+            int x = player.getBlockX() + (int)(Math.cos(angle) * dist);
+            int z = player.getBlockZ() + (int)(Math.sin(angle) * dist);
 
-            int y = player.getBlockY() + level.random.nextInt(20) - 10;
+            int playerY = player.getBlockY();
+            for (int dy = 0; dy >= -15; dy--) {
+                BlockPos testPos = new BlockPos(x, playerY + dy, z);
 
-            BlockPos testPos = new BlockPos(x, y, z);
-
-            if (level.isEmptyBlock(testPos) &&
-                    level.isEmptyBlock(testPos.above()) &&
-                    level.getBlockState(testPos.below()).isSolidRender(level, testPos.below()) &&
-                    !level.canSeeSky(testPos)) {
-
-                return testPos;
+                if (level.isEmptyBlock(testPos) &&
+                        level.isEmptyBlock(testPos.above()) &&
+                        level.getBlockState(testPos.below()).isSolidRender(level, testPos.below()) &&
+                        !level.canSeeSky(testPos) &&
+                        !ChunkSafetyEvaluator.isPlayerBase(level, testPos)) {
+                    return testPos;
+                }
             }
         }
         return null;
     }
 
     private void spawnCaveUnit(ServerLevel level, BlockPos basePos, boolean isRu) {
-        double dx = (level.random.nextDouble() - 0.5) * 2;
-        double dz = (level.random.nextDouble() - 0.5) * 2;
+        double dx = (level.random.nextDouble() - 0.5) * 8;
+        double dz = (level.random.nextDouble() - 0.5) * 8;
 
         BlockPos spawnPos = basePos.offset((int)dx, 0, (int)dz);
         spawnPos = new BlockPos(spawnPos.getX(), basePos.getY(), spawnPos.getZ());

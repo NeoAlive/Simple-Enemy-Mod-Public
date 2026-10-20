@@ -15,11 +15,12 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.level.Level;
-
 import net.nekoyuni.SimpleEnemyMod.entity.ai.goals.utils.AiGunSpreadHelper;
+import net.nekoyuni.SimpleEnemyMod.entity.ai.sensing.TacticalLineOfSightHelper;
+import net.nekoyuni.SimpleEnemyMod.entity.ai.awareness.CombatSoundAwarenessManager;
+import net.nekoyuni.SimpleEnemyMod.entity.ai.suppression.CombatSuppressionManager;
+import net.nekoyuni.SimpleEnemyMod.config.common.TacticalAiConfig;
+import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
 import net.nekoyuni.SimpleEnemyMod.inventory.PmcInventorySlots;
 import org.slf4j.Logger;
@@ -65,6 +66,11 @@ public class RangedGunAttackGoal extends Goal {
 
     private int attackDelay = 0;
     private boolean cachedHasLoS = false;
+    private int lastClearLoSCheckTick = -1000;
+    private int lastClearLoSTargetId = -1;
+    private boolean cachedRoughLoS = false;
+    private int lastRoughLoSCheckTick = -1000;
+    private int lastRoughLoSTargetId = -1;
 
 
     public RangedGunAttackGoal(Mob mob,
@@ -102,7 +108,11 @@ public class RangedGunAttackGoal extends Goal {
             return false;
         }
 
-        return this.mob.getSensing().hasLineOfSight(currentTarget);
+        if (!TacticalAiConfig.enablePreciseFoliageLos()) {
+            return this.getCachedRoughLineOfSight(currentTarget);
+        }
+
+        return this.getCachedRoughLineOfSight(currentTarget) || this.getCachedClearLineOfSight(currentTarget);
     }
 
     @Override
@@ -113,7 +123,7 @@ public class RangedGunAttackGoal extends Goal {
 
     @Override
     public void start() {
-        this.attackDelay = 3 + this.mob.getRandom().nextInt(5);
+        this.attackDelay = 1 + this.mob.getRandom().nextInt(3); // Shoot Fix
 
         this.target = this.mob.getTarget();
 
@@ -128,6 +138,7 @@ public class RangedGunAttackGoal extends Goal {
 
         IGunOperator operator = IGunOperator.fromLivingEntity(this.mob);
         operator.aim(true);
+        operator.draw(() -> this.mob.getMainHandItem()); // Shoot Fix
 
         if (this.target != null) {
             this.mob.getLookControl().setLookAt(this.target, 30F, 30F);
@@ -193,8 +204,8 @@ public class RangedGunAttackGoal extends Goal {
 
         IGunOperator operator = IGunOperator.fromLivingEntity(this.mob);
 
-        boolean canSeeTargetRoughly = this.mob.getSensing().hasLineOfSight(this.target);
-        if (canSeeTargetRoughly) {
+        boolean hasVanillaLoS = this.getCachedRoughLineOfSight(this.target);
+        if (hasVanillaLoS) {
             this.mob.getLookControl().setLookAt(this.target, 30F, 30F);
             this.mob.yBodyRot = this.mob.yHeadRot; // TEST
         }
@@ -220,21 +231,20 @@ public class RangedGunAttackGoal extends Goal {
         double distanceSq = this.mob.distanceToSqr(this.target);
         boolean inShootRange = distanceSq <= this.MAX_SHOOT_DISTANCE_SQR;
 
-        if ((this.mob.tickCount + this.mob.getId()) % 5 == 0) {
-            this.cachedHasLoS = hasLineOfSightToTarget(this.target);
-        }
-
-        boolean hasClearLoSNow = this.cachedHasLoS;
+        boolean hasTacticalLoS = TacticalAiConfig.enablePreciseFoliageLos()
+                ? this.getCachedClearLineOfSight(this.target)
+                : hasVanillaLoS;
+        boolean hasShootLineOfSight = hasVanillaLoS || hasTacticalLoS;
 
         switch (this.currentGoalState) {
             case IDLE:
-                handleIdleState(operator, gunStack, distanceSq, canSeeTargetRoughly, isBusyTACZ);
+                handleIdleState(operator, gunStack, distanceSq, hasShootLineOfSight, isBusyTACZ);
                 break;
             case BURST_COOLDOWN:
-                handleBurstCooldownState(inShootRange, canSeeTargetRoughly, hasClearLoSNow);
+                handleBurstCooldownState(inShootRange, hasShootLineOfSight);
                 break;
             case BURST_FIRING:
-                handleBurstFiringState(operator, gunStack, distanceSq, canSeeTargetRoughly, hasClearLoSNow, iGun, isBusyTACZ);
+                handleBurstFiringState(operator, gunStack, distanceSq, hasShootLineOfSight, iGun, isBusyTACZ);
                 break;
         }
     }
@@ -252,12 +262,12 @@ public class RangedGunAttackGoal extends Goal {
             IGunOperator operator,
             ItemStack gunStack,
             double distanceSq,
-            boolean hasClearLoSNow,
+            boolean hasShootLineOfSight,
             boolean isBusyTACZ) {
 
         boolean inShootRange = distanceSq <= MAX_SHOOT_DISTANCE_SQR;
 
-        if (!inShootRange || !hasClearLoSNow) {
+        if (!inShootRange || !hasShootLineOfSight) {
             return;
         }
 
@@ -293,7 +303,7 @@ public class RangedGunAttackGoal extends Goal {
     }
 
 
-    private void handleBurstCooldownState(boolean inShootRange, boolean canSeeTargetRoughly, boolean hasClearLoSNow) {
+    private void handleBurstCooldownState(boolean inShootRange, boolean hasShootLineOfSight) {
 
         if (this.burstCooldownTicks > 0) {
             this.burstCooldownTicks--;
@@ -307,7 +317,7 @@ public class RangedGunAttackGoal extends Goal {
             this.currentBurstTarget = 0;
         }
 
-        if (!inShootRange || !canSeeTargetRoughly || !hasClearLoSNow) {
+        if (!inShootRange || !hasShootLineOfSight) {
             debug(ANSI_YELLOW +
                     "[AI AttackGoal] BURST_COOLDOWN: Holding fire; LoS/range locked or out of range. Returning to IDLE." + ANSI_RESET);
 
@@ -319,14 +329,13 @@ public class RangedGunAttackGoal extends Goal {
             IGunOperator operator,
             ItemStack gunStack,
             double distanceSq,
-            boolean canSeeTargetRoughly,
-            boolean hasClearLoSNow,
+            boolean hasShootLineOfSight,
             IGun iGun,
             boolean isBusyTACZ) {
 
         boolean inShootRange = distanceSq <= MAX_SHOOT_DISTANCE_SQR;
 
-        if (!inShootRange || !canSeeTargetRoughly || !hasClearLoSNow) {
+        if (!inShootRange || !hasShootLineOfSight) {
             debug(ANSI_YELLOW +
                     "[AI AttackGoal] BURST_FIRING: Holding fire; LoS/range locked or out of range. Returning to IDLE." + ANSI_RESET);
 
@@ -391,19 +400,35 @@ public class RangedGunAttackGoal extends Goal {
         float distance = (float) eyePos.distanceTo(targetCenter);
         RandomSource random = this.mob.getRandom();
 
-        float finalPitch = AiGunSpreadHelper.CalculateSpread(basePitch, distance, this.BASE_SPREAD_DEGREES,
+        float suppressionSpreadPenalty = this.mob instanceof AbstractUnit unit
+                ? unit.getSuppressionSpreadPenalty()
+                : 0.0F;
+
+        float finalPitch = AiGunSpreadHelper.CalculateSpread(basePitch, distance, this.BASE_SPREAD_DEGREES + suppressionSpreadPenalty,
                 this.SPREAD_INCREASE_PER_BLOCK, random);
 
-        float finalYaw = AiGunSpreadHelper.CalculateSpread(baseYaw, distance, this.BASE_SPREAD_DEGREES,
+        float finalYaw = AiGunSpreadHelper.CalculateSpread(baseYaw, distance, this.BASE_SPREAD_DEGREES + suppressionSpreadPenalty,
                 this.SPREAD_INCREASE_PER_BLOCK, random);
 
 
-        operator.aim(true);
+        // operator.aim(true);
         ShootResult shootResult = operator.shoot(() -> finalPitch, () -> finalYaw);
 
 
         switch (shootResult) {
             case SUCCESS:
+                CombatSoundAwarenessManager.emitGunshot(
+                        this.mob.level(),
+                        this.mob,
+                        this.mob.position(),
+                        TacticalAiConfig.gunshotHearingRadius()
+                );
+                CombatSuppressionManager.emitGunfireSuppression(
+                        this.mob.level(),
+                        this.mob,
+                        targetCenter,
+                        TacticalAiConfig.suppressionImpactRadius()
+                );
                 this.burstShotsFired++;
                 trace(ANSI_GREEN +
                         "[AI AttackGoal] Successful shot! Burst {}/{}",
@@ -513,20 +538,43 @@ public class RangedGunAttackGoal extends Goal {
         return true;
     }
 
+
+    private boolean getCachedRoughLineOfSight(LivingEntity pTarget) {
+        if (pTarget == null) {
+            return false;
+        }
+
+        int interval = TacticalAiConfig.aiLosCacheTicks();
+        int targetId = pTarget.getId();
+        if (this.mob.tickCount - this.lastRoughLoSCheckTick < interval && this.lastRoughLoSTargetId == targetId) {
+            return this.cachedRoughLoS;
+        }
+
+        this.cachedRoughLoS = this.mob.getSensing().hasLineOfSight(pTarget);
+        this.lastRoughLoSCheckTick = this.mob.tickCount;
+        this.lastRoughLoSTargetId = targetId;
+        return this.cachedRoughLoS;
+    }
+
+    private boolean getCachedClearLineOfSight(LivingEntity pTarget) {
+        if (pTarget == null) {
+            return false;
+        }
+
+        int interval = TacticalAiConfig.aiLosCacheTicks();
+        int targetId = pTarget.getId();
+        if (this.mob.tickCount - this.lastClearLoSCheckTick < interval && this.lastClearLoSTargetId == targetId) {
+            return this.cachedHasLoS;
+        }
+
+        this.cachedHasLoS = hasLineOfSightToTarget(pTarget);
+        this.lastClearLoSCheckTick = this.mob.tickCount;
+        this.lastClearLoSTargetId = targetId;
+        return this.cachedHasLoS;
+    }
+
     private boolean hasLineOfSightToTarget(LivingEntity pTarget) {
-        if (pTarget == null) return false;
-
-        Level level = this.mob.level();
-
-        Vec3 mobEyePos = this.mob.getEyePosition();
-        Vec3 targetCenterPos = pTarget.getEyePosition();
-
-        ClipContext context = new ClipContext(mobEyePos, targetCenterPos, ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE, this.mob);
-
-        HitResult hitResult = level.clip(context);
-
-        return hitResult.getType() == HitResult.Type.MISS;
+        return TacticalLineOfSightHelper.hasFoliageTransparentLineOfSight(this.mob, pTarget);
     }
 
 
