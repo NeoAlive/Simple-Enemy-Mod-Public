@@ -149,3 +149,98 @@ publishing {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+// ---------------------------------------------------------------------------------------------
+// sewv contract: class/member names that addons (tacz_sewv) bind to by mixin or direct call.
+// contract/sewv-surface.txt lists "class <fqcn>" blocks with their javap member signatures and
+// "keep-private <name>" lines for private members that are mixin targets. checkSewvContract fails
+// when a listed member disappears or changes; additions are fine. After an intentional change
+// (e.g. an upstream sync), run updateSewvContract and commit the file with the change.
+// ---------------------------------------------------------------------------------------------
+def sewvContractFile = file('contract/sewv-surface.txt')
+
+def readSewvContract = {
+    def classes = new LinkedHashMap<String, List<String>>()
+    def keepPrivate = new LinkedHashSet<String>()
+    String current = null
+    sewvContractFile.eachLine('UTF-8') { raw ->
+        def line = raw.trim()
+        if (line.isEmpty() || line.startsWith('#')) return
+        if (line.startsWith('keep-private ')) { keepPrivate << line.substring(13).trim(); return }
+        if (line.startsWith('class ')) { current = line.substring(6).trim(); classes[current] = []; return }
+        classes[current] << line
+    }
+    [classes, keepPrivate]
+}
+
+def javapSurface = { Collection<String> classNames, Set<String> keepPrivate ->
+    def javap = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }.get()
+            .metadata.installationPath.file('bin/javap').asFile.absolutePath
+    def cmd = [javap, '-p', '-cp', sourceSets.main.output.classesDirs.asPath] + classNames
+    def proc = new ProcessBuilder(cmd).redirectErrorStream(true).start()
+    def out = proc.inputStream.getText('UTF-8')
+    proc.waitFor()
+
+    def surface = new LinkedHashMap<String, LinkedHashSet<String>>()
+    String current = null
+    out.eachLine { raw ->
+        def line = raw.trim()
+        def header = line =~ /\b(?:class|interface|enum|record) ([\w.$]+)/
+        if (line.endsWith('{') && header.find()) {
+            current = header.group(1)
+            surface[current] = new LinkedHashSet<String>()
+            return
+        }
+        if (current == null || !line.endsWith(';') || line == 'static {};' || line.contains('lambda$')) return
+        if (line.startsWith('private ')) {
+            def name = line.contains('(') ? (line =~ /([\w$]+)\(/)[0][1] : (line =~ /([\w$]+);$/)[0][1]
+            if (!keepPrivate.contains(name)) return
+        }
+        surface[current] << line
+    }
+    if (proc.exitValue() != 0 && surface.isEmpty()) throw new GradleException("javap failed:\n" + out)
+    surface
+}
+
+tasks.register('checkSewvContract') {
+    group = 'verification'
+    description = 'Fails if a class/member listed in contract/sewv-surface.txt was removed or changed.'
+    dependsOn tasks.named('classes')
+    inputs.file(sewvContractFile)
+    doLast {
+        def (classes, keepPrivate) = readSewvContract()
+        def surface = javapSurface(classes.keySet(), keepPrivate)
+        def problems = []
+        classes.each { cls, members ->
+            if (!surface.containsKey(cls)) { problems << "missing class ${cls}"; return }
+            members.each { m -> if (!surface[cls].contains(m)) problems << "${cls}: missing or changed: ${m}" }
+        }
+        if (!problems.isEmpty()) {
+            throw new GradleException("sewv contract broken (${problems.size()}):\n  " + problems.join('\n  ')
+                    + "\nIf intentional, run ./gradlew updateSewvContract and update docs/SEWV_PORTING.md.")
+        }
+        logger.lifecycle("sewv contract OK (${classes.size()} classes)")
+    }
+}
+
+tasks.register('updateSewvContract') {
+    group = 'verification'
+    description = 'Rewrites contract/sewv-surface.txt from the compiled classes it lists.'
+    dependsOn tasks.named('classes')
+    doLast {
+        def (classes, keepPrivate) = readSewvContract()
+        def surface = javapSurface(classes.keySet(), keepPrivate)
+        def header = sewvContractFile.readLines('UTF-8').takeWhile { it.startsWith('#') || it.startsWith('keep-private') || it.trim().isEmpty() }
+        def out = new StringBuilder()
+        header.each { out << it << '\n' }
+        classes.keySet().each { cls ->
+            out << "class ${cls}\n"
+            (surface[cls] ?: []).each { out << "  ${it}\n" }
+            out << '\n'
+        }
+        sewvContractFile.text = out.toString()
+        logger.lifecycle("wrote ${sewvContractFile} (${classes.size()} classes)")
+    }
+}
+
+tasks.named('check') { dependsOn 'checkSewvContract' }

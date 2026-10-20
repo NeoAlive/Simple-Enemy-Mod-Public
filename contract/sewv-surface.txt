@@ -1,0 +1,676 @@
+# sewv contract - names tacz_sewv (and other addons) bind to by mixin or direct call.
+# See CLAUDE.md "sewv contract". Regenerate with ./gradlew updateSewvContract after an intentional change.
+# Private members that are mixin targets (@Shadow fields, private methods injected into):
+keep-private mob
+keep-private unit
+keep-private entityId
+keep-private order
+keep-private targetPos
+keep-private formationIndex
+keep-private targetEntityId
+keep-private spawnGuard
+keep-private spawnCircle
+keep-private calculateClassicFormationTarget
+keep-private findPredecessor
+keep-private hasLineOfSightToTarget
+keep-private tryEventForPlayer
+
+class net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit
+  protected net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole role;
+  protected static final int HURT_ANIMATION_DURATION;
+  public static final net.minecraft.network.syncher.EntityDataAccessor<java.lang.Integer> DAMAGE_ANIMATION_TICKS;
+  public static final net.minecraft.network.syncher.EntityDataAccessor<java.lang.Boolean> BACK_DEATH;
+  protected static final net.minecraft.network.syncher.EntityDataAccessor<java.lang.Integer> DATA_VARIANT_ID;
+  public final net.minecraft.world.entity.AnimationState idleAnimationState;
+  public final net.minecraft.world.entity.AnimationState hurtAnimationState;
+  public final net.minecraft.world.entity.AnimationState walkAnimationState;
+  public final net.minecraft.world.entity.AnimationState deathAnimationState;
+  public static final net.minecraft.network.syncher.EntityDataAccessor<java.lang.Boolean> IS_IN_COMBAT;
+  public static final net.minecraft.network.syncher.EntityDataAccessor<java.lang.Float> COMBAT_YAW;
+  public int currentHurtVariant;
+  protected net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit(net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.monster.Monster>, net.minecraft.world.level.Level);
+  protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData$Builder);
+  public static net.minecraft.world.entity.ai.attributes.AttributeSupplier$Builder createAttributes();
+  public net.minecraft.world.entity.SpawnGroupData finalizeSpawn(net.minecraft.world.level.ServerLevelAccessor, net.minecraft.world.DifficultyInstance, net.minecraft.world.entity.MobSpawnType, net.minecraft.world.entity.SpawnGroupData);
+  public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag);
+  public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag);
+  public void tick();
+  public boolean hurt(net.minecraft.world.damagesource.DamageSource, float);
+  public void die(net.minecraft.world.damagesource.DamageSource);
+  public void onSyncedDataUpdated(net.minecraft.network.syncher.EntityDataAccessor<?>);
+  public void lockMovementForStrategy(net.nekoyuni.SimpleEnemyMod.entity.unit.util.StrategyType);
+  public boolean isDeadOrDying();
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole getRole();
+  public void setRole(net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole);
+  public void setAnimationManager(net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.LayeredAnimationManager);
+  public net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.LayeredAnimationManager getAnimationManager();
+  public void onAnimationVariantSelected(java.lang.String, int);
+  public void setTarget(net.minecraft.world.entity.LivingEntity);
+  protected net.minecraft.sounds.SoundEvent getHurtSound(net.minecraft.world.damagesource.DamageSource);
+  protected net.minecraft.sounds.SoundEvent getDeathSound();
+  public float getSoundVolume();
+  public float getVoicePitch();
+  public boolean isInCombat();
+  public float getCombatYaw();
+  public net.nekoyuni.SimpleEnemyMod.entity.unit.util.StrategyType getStrategy();
+  public void setStrategy(net.nekoyuni.SimpleEnemyMod.entity.unit.util.StrategyType);
+  public net.minecraft.core.BlockPos getCoverBlock();
+  public void setCoverBlock(net.minecraft.core.BlockPos);
+  public void setLastMicroMoveTick(long);
+  public long getLastMicroMoveTick();
+  public net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState getSoldierState();
+  public void setSoldierState(net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState);
+  public void setCoverSearchOrigin(net.minecraft.core.BlockPos);
+  public net.minecraft.core.BlockPos getCoverSearchOrigin();
+  public net.minecraft.world.phys.Vec3 getLastKnownTargetPos();
+  public void setLastKnownTargetPos(net.minecraft.world.phys.Vec3);
+  public long getLastSeenTargetTick();
+  public void setLastSeenTargetTick(long);
+  public long getFlankingStartTick();
+  public void setFlankingStartTick(long);
+  public float getFlankingAngle();
+  public void setFlankingAngle(float);
+  public boolean isFlankingActive();
+  public void setFlankingActive(boolean);
+  public int getFlankingDirection();
+  public void setFlankingDirection(int);
+  public boolean addGenericSuppression(net.minecraft.world.entity.Entity, net.minecraft.world.phys.Vec3, float);
+  public float getGenericSuppressionLevel();
+  public float getSuppressionSpreadPenalty();
+  public boolean shouldAcceptCombatNoiseFrom(net.minecraft.world.entity.Entity, boolean);
+  public void hearCombatNoise(net.minecraft.world.phys.Vec3, net.minecraft.world.entity.Entity, boolean, double);
+  public boolean hasHeardThreat();
+  public net.minecraft.world.phys.Vec3 getLastHeardEnemyPosition();
+  public net.minecraft.world.entity.Entity getLastHeardEnemySource();
+  public double getLastHeardEnemyStrength();
+  public boolean wasLastHeardThreatGunshot();
+  public int getHeardCombatNoiseTicks();
+  public void clearHeardThreat();
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.decision.CombatDecisionContext updateCombatDecisionContext(net.minecraft.world.entity.LivingEntity, boolean, double);
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.decision.TacticalCombatState getTacticalCombatState();
+  public float getThreatPressure();
+  public float getCombatConfidence();
+  public double getTacticalSpeedMultiplier();
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.decision.CombatDecisionContext getLastCombatDecisionContext();
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.squad.SquadContext getSquadContext();
+  public net.minecraft.world.phys.Vec3 getSharedEnemyPosition();
+  public void lockMovementForManager(int);
+  public boolean isMovementLockedByManager();
+  public void releaseMovementLock();
+  public void setGlowingFlag(boolean);
+  public abstract void equipRandomGun();
+  public abstract void setupRoleGoals();
+  protected abstract net.minecraft.sounds.SoundEvent getCustomHurtSound();
+  protected abstract net.minecraft.sounds.SoundEvent getCustomDeathSound();
+  protected abstract net.minecraft.sounds.SoundEvent getCustomAlertSound();
+
+class net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity
+  public net.nekoyuni.SimpleEnemyMod.inventory.UnitInventoryHandler getInventory();
+  public net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity(net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.monster.Monster>, net.minecraft.world.level.Level);
+  public int getVariant();
+  public void setVariant(int);
+  protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData$Builder);
+  public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag);
+  public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag);
+  protected void dropCustomDeathLoot(net.minecraft.server.level.ServerLevel, net.minecraft.world.damagesource.DamageSource, boolean);
+  public void syncEquipmentToInventory();
+  public void equipRandomGun();
+  public void setupRoleGoals();
+  public net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player, net.minecraft.world.InteractionHand);
+  public void resetCommanderGoalCooldown();
+  protected net.minecraft.sounds.SoundEvent getCustomHurtSound();
+  protected net.minecraft.sounds.SoundEvent getCustomDeathSound();
+  protected net.minecraft.sounds.SoundEvent getCustomAlertSound();
+  public float getSoundVolume();
+  public void setRole(net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole);
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole getRole();
+  public boolean isPreventingPlayerRest(net.minecraft.world.entity.player.Player);
+  public void setTarget(net.minecraft.world.entity.LivingEntity);
+  public void setOrder(net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType);
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType getOrder();
+  public void setMoveToTarget(net.minecraft.world.phys.Vec3);
+  public net.minecraft.world.phys.Vec3 getMoveToTarget();
+  public void setOwner(java.util.UUID);
+  public java.util.UUID getOwnerUUID();
+  public boolean isOwnedBy(net.minecraft.world.entity.player.Player);
+  public void setFormationIndex(int);
+  public int getFormationIndex();
+  public void setAttackTargetId(int);
+  public int getAttackTargetId();
+  public boolean isFireAllowed();
+
+class net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity
+  public net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity(net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.monster.Monster>, net.minecraft.world.level.Level);
+  public int getVariant();
+  public void setVariant(int);
+  public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag);
+  public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag);
+  public void equipRandomGun();
+  public void setupRoleGoals();
+  public void setTarget(net.minecraft.world.entity.LivingEntity);
+  protected net.minecraft.sounds.SoundEvent getCustomHurtSound();
+  protected net.minecraft.sounds.SoundEvent getCustomDeathSound();
+  protected net.minecraft.sounds.SoundEvent getCustomAlertSound();
+  public float getSoundVolume();
+
+class net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity
+  public net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity(net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.monster.Monster>, net.minecraft.world.level.Level);
+  public int getVariant();
+  public void setVariant(int);
+  public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag);
+  public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag);
+  public void equipRandomGun();
+  public void setupRoleGoals();
+  public void setTarget(net.minecraft.world.entity.LivingEntity);
+  protected net.minecraft.sounds.SoundEvent getCustomHurtSound();
+  protected net.minecraft.sounds.SoundEvent getCustomDeathSound();
+  protected net.minecraft.sounds.SoundEvent getCustomAlertSound();
+  public float getSoundVolume();
+
+class net.nekoyuni.SimpleEnemyMod.entity.unit.util.UnitFactionTags
+  public static final net.minecraft.tags.TagKey<net.minecraft.world.entity.EntityType<?>> PMC_UNITS;
+  public static final net.minecraft.tags.TagKey<net.minecraft.world.entity.EntityType<?>> RU_UNITS;
+  public static final net.minecraft.tags.TagKey<net.minecraft.world.entity.EntityType<?>> US_UNITS;
+  public static boolean isPmcUnit(net.minecraft.world.entity.Entity);
+  public static boolean isRuUnit(net.minecraft.world.entity.Entity);
+  public static boolean isUsUnit(net.minecraft.world.entity.Entity);
+  public static boolean isTaggedUnit(net.minecraft.world.entity.Entity);
+  public static boolean isFriendlyToNpcFaction(net.minecraft.world.entity.LivingEntity, net.minecraft.world.entity.LivingEntity);
+  public static boolean isSameTaggedFaction(net.minecraft.world.entity.Entity, net.minecraft.world.entity.Entity);
+  public static boolean isFriendlyFire(net.minecraft.world.entity.Entity, net.minecraft.world.entity.Entity);
+  public static boolean isFriendlyToPmc(net.minecraft.world.entity.LivingEntity);
+  public static boolean isFriendlyToRu(net.minecraft.world.entity.LivingEntity);
+  public static boolean isFriendlyToUs(net.minecraft.world.entity.LivingEntity);
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType FOLLOW_COMMANDER;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType HOLD_POSITION;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType MOVE_TO_POSITION;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType FORM_WEDGE;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType FORM_COLUMN;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType CEASE_FIRE;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType FREE_FIRE;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType ATTACK_THAT_TARGET;
+  public static net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType[] values();
+  public static net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType valueOf(java.lang.String);
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.orders.ICommandableMob
+  public abstract net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType getOrder();
+  public abstract void setOrder(net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType);
+  public abstract java.util.UUID getOwnerUUID();
+  public abstract net.minecraft.world.phys.Vec3 getMoveToTarget();
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole DEFAULT;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole SQUAD_LEADER;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole SQUAD_UNIT;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole FRIENDLY_DEFAULT;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole FRIENDLY_SQUAD_LEADER;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole FRIENDLY_SQUAD_UNIT;
+  public static net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole[] values();
+  public static net.nekoyuni.SimpleEnemyMod.entity.ai.roles.utils.UnitRole valueOf(java.lang.String);
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.roles.IRoleGoals getGoals();
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.roles.IRoleGoals
+  public abstract void addGoals(net.minecraft.world.entity.PathfinderMob);
+
+class net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState
+  public static final net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState IDLE;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState ENGAGE;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState TACTICAL_MOV;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState SEEK_COVER;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState HOLD_COVER;
+  public static final net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState SEARCH;
+  public static net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState[] values();
+  public static net.nekoyuni.SimpleEnemyMod.entity.unit.util.SoldierState valueOf(java.lang.String);
+
+class net.nekoyuni.SimpleEnemyMod.network.packets.PacketIssueOrder
+  private final int entityId;
+  private final net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType order;
+  private final net.minecraft.world.phys.Vec3 targetPos;
+  private final int formationIndex;
+  private final int targetEntityId;
+  public static final net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.nekoyuni.SimpleEnemyMod.network.packets.PacketIssueOrder> TYPE;
+  public static final net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.nekoyuni.SimpleEnemyMod.network.packets.PacketIssueOrder> STREAM_CODEC;
+  public net.nekoyuni.SimpleEnemyMod.network.packets.PacketIssueOrder(int, net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType, net.minecraft.world.phys.Vec3, int, int);
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> type();
+  public static void handle(net.nekoyuni.SimpleEnemyMod.network.packets.PacketIssueOrder, net.neoforged.neoforge.network.handling.IPayloadContext);
+  public static void handleOnServer(net.nekoyuni.SimpleEnemyMod.network.packets.PacketIssueOrder, net.minecraft.server.level.ServerPlayer);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int entityId();
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType order();
+  public net.minecraft.world.phys.Vec3 targetPos();
+  public int formationIndex();
+  public int targetEntityId();
+
+class net.nekoyuni.SimpleEnemyMod.network.ModNetworking
+  public static final java.lang.String PROTOCOL_VERSION;
+  public net.nekoyuni.SimpleEnemyMod.network.ModNetworking();
+  public static void registerPayloads(net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent);
+  public static void sendToPlayer(net.minecraft.network.protocol.common.custom.CustomPacketPayload, net.minecraft.server.level.ServerPlayer);
+  public static void sendToServer(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.CommanderOrderGoal
+  private final net.minecraft.world.entity.PathfinderMob mob;
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.CommanderOrderGoal(net.minecraft.world.entity.PathfinderMob, double, float, float);
+  public void resetCombatCooldown();
+  public boolean canUse();
+  public boolean canContinueToUse();
+  public void start();
+  public void tick();
+  private net.minecraft.world.phys.Vec3 calculateClassicFormationTarget(net.minecraft.world.entity.LivingEntity, net.nekoyuni.SimpleEnemyMod.entity.ai.orders.OrderType, int);
+  private net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity findPredecessor(net.minecraft.world.entity.LivingEntity, int);
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.MoveToAttackRangeGoal
+  private final net.minecraft.world.entity.Mob mob;
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.MoveToAttackRangeGoal(net.minecraft.world.entity.Mob, double, double, double);
+  public boolean canUse();
+  public boolean canContinueToUse();
+  public void start();
+  public void stop();
+  public void tick();
+  public boolean requiresUpdateEveryTick();
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.RangedGunAttackGoal
+  private final net.minecraft.world.entity.Mob mob;
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.RangedGunAttackGoal(net.minecraft.world.entity.Mob, float, float, float, int, int, int, int);
+  public boolean canUse();
+  public boolean canContinueToUse();
+  public void start();
+  public void stop();
+  public void tick();
+  private boolean hasLineOfSightToTarget(net.minecraft.world.entity.LivingEntity);
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.SeekCoverGoal
+  private final net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit unit;
+  private final net.minecraft.world.entity.Mob mob;
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.SeekCoverGoal(net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit, double, int);
+  public boolean canUse();
+  public void start();
+  public boolean canContinueToUse();
+  public void stop();
+  public void tick();
+  public boolean requiresUpdateEveryTick();
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.PeekFromCoverGoal
+  private final net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit unit;
+  private final net.minecraft.world.entity.Mob mob;
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.PeekFromCoverGoal(net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit, double);
+  public boolean canUse();
+  public void start();
+  public boolean canContinueToUse();
+  public void tick();
+  public void stop();
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.TacticalManeuverGoal
+  private final net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit unit;
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.TacticalManeuverGoal(net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit);
+  public boolean canUse();
+  public boolean canContinueToUse();
+  public void tick();
+  public void stop();
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.TacticalInvestigateSoundGoal
+  private final net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit unit;
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.TacticalInvestigateSoundGoal(net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit);
+  public boolean canUse();
+  public boolean canContinueToUse();
+  public void tick();
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.TacticalManagerGoal
+  private final net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit unit;
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.TacticalManagerGoal(net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit);
+  public boolean canUse();
+  public boolean canContinueToUse();
+  public void tick();
+
+class net.nekoyuni.SimpleEnemyMod.entity.ai.goals.NoPlayerHurtByTargetGoal
+  public net.nekoyuni.SimpleEnemyMod.entity.ai.goals.NoPlayerHurtByTargetGoal(net.minecraft.world.entity.PathfinderMob, java.lang.Class<?>...);
+  public boolean canUse();
+
+class net.nekoyuni.SimpleEnemyMod.procedural.events.DynamicEventManager
+  public net.nekoyuni.SimpleEnemyMod.procedural.events.DynamicEventManager();
+  public static void registerEvent(net.nekoyuni.SimpleEnemyMod.procedural.events.system.DynamicEvent);
+  public static java.util.Set<java.lang.String> getEventIds();
+  public static void tick(net.minecraft.server.level.ServerLevel);
+  private static boolean tryEventForPlayer(net.minecraft.server.level.ServerLevel, net.nekoyuni.SimpleEnemyMod.world.data.EventProbabilityData, net.nekoyuni.SimpleEnemyMod.procedural.events.system.DynamicEvent, net.minecraft.server.level.ServerPlayer);
+  public static boolean forceEvent(net.minecraft.server.level.ServerLevel, net.minecraft.server.level.ServerPlayer, java.lang.String);
+  public static void onPlayerDisconnect(net.minecraft.server.level.ServerPlayer);
+  public static net.nekoyuni.SimpleEnemyMod.procedural.events.system.EventCooldownManager getCooldownManager();
+  public static void register();
+
+class net.nekoyuni.SimpleEnemyMod.procedural.events.system.DynamicEvent
+  public net.nekoyuni.SimpleEnemyMod.procedural.events.system.DynamicEvent(java.lang.String);
+  public java.lang.String getId();
+  public abstract double getBaseChance();
+  public abstract double getFailureMultiplier();
+  public abstract int getMinDistance();
+  public abstract int getMaxDistance();
+  public double getBiomeModifier(net.minecraft.server.level.ServerLevel, net.minecraft.core.BlockPos);
+  public boolean canExecute(net.minecraft.server.level.ServerLevel, net.minecraft.server.level.ServerPlayer);
+  public abstract boolean execute(net.minecraft.server.level.ServerLevel, net.minecraft.server.level.ServerPlayer, net.minecraft.core.BlockPos);
+
+class net.nekoyuni.SimpleEnemyMod.procedural.events.type.CombatEvent
+  public net.nekoyuni.SimpleEnemyMod.procedural.events.type.CombatEvent();
+  public double getBaseChance();
+  public double getFailureMultiplier();
+  public int getMinDistance();
+  public int getMaxDistance();
+  public double getBiomeModifier(net.minecraft.server.level.ServerLevel, net.minecraft.core.BlockPos);
+  public boolean execute(net.minecraft.server.level.ServerLevel, net.minecraft.server.level.ServerPlayer, net.minecraft.core.BlockPos);
+
+class net.nekoyuni.SimpleEnemyMod.spawn.utils.SpawnHelper
+  public net.nekoyuni.SimpleEnemyMod.spawn.utils.SpawnHelper();
+  public static net.minecraft.core.BlockPos getRandomPositionNearPlayer(net.minecraft.server.level.ServerPlayer, int, int, net.minecraft.server.level.ServerLevel);
+  public static boolean isValidSpawn(net.minecraft.server.level.ServerLevel, net.minecraft.core.BlockPos);
+
+class net.nekoyuni.SimpleEnemyMod.event.common.VillageGarrisonHandler
+  public net.nekoyuni.SimpleEnemyMod.event.common.VillageGarrisonHandler();
+  public static void onVillagerSpawn(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent);
+  public static void onLevelTick(net.neoforged.neoforge.event.tick.LevelTickEvent$Post);
+  private static void spawnGuard(net.minecraft.server.level.ServerLevel, net.minecraft.core.BlockPos, boolean);
+
+class net.nekoyuni.SimpleEnemyMod.event.common.UnitLoadoutManager
+  public net.nekoyuni.SimpleEnemyMod.event.common.UnitLoadoutManager();
+  public static void onAddReloadListeners(net.neoforged.neoforge.event.AddReloadListenerEvent);
+  protected void apply(java.util.Map<net.minecraft.resources.ResourceLocation, com.google.gson.JsonElement>, net.minecraft.server.packs.resources.ResourceManager, net.minecraft.util.profiling.ProfilerFiller);
+  public static net.nekoyuni.SimpleEnemyMod.data.UnitLoadout getRandomLoadout(java.lang.String, net.minecraft.util.RandomSource);
+  protected void apply(java.lang.Object, net.minecraft.server.packs.resources.ResourceManager, net.minecraft.util.profiling.ProfilerFiller);
+
+class net.nekoyuni.SimpleEnemyMod.client.system.ClientGlowManager
+  public net.nekoyuni.SimpleEnemyMod.client.system.ClientGlowManager();
+  public static void addEntity(int);
+  public static void removeEntity(int);
+  public static boolean shouldGlow(int);
+  public static void clear();
+  public static java.util.Set<java.lang.Integer> getAll();
+
+class net.nekoyuni.SimpleEnemyMod.event.client.ClientGlowRenderHandler
+  public net.nekoyuni.SimpleEnemyMod.event.client.ClientGlowRenderHandler();
+  public static void onClientTick(net.neoforged.neoforge.client.event.ClientTickEvent$Post);
+  private static void spawnCircle(net.minecraft.world.level.Level, net.minecraft.world.entity.Entity);
+  public static void onRenderLiving(net.neoforged.neoforge.client.event.RenderLivingEvent$Pre<?, ?>);
+
+class net.nekoyuni.SimpleEnemyMod.client.gui.overlay.CommanderOverlayRenderer
+  public static boolean isSelectingPosition;
+  public static java.util.Set<java.lang.Integer> selectedUnitsSnapshot;
+  public static boolean isSelectingTarget;
+  public net.nekoyuni.SimpleEnemyMod.client.gui.overlay.CommanderOverlayRenderer();
+  public static void onRenderWorldLast(net.neoforged.neoforge.client.event.RenderLevelStageEvent);
+
+class net.nekoyuni.SimpleEnemyMod.client.util.CommanderRayTrace
+  public net.nekoyuni.SimpleEnemyMod.client.util.CommanderRayTrace();
+  public static net.minecraft.world.phys.BlockHitResult rayTrace(net.minecraft.world.entity.player.Player, double);
+  public static boolean isValidMoveTarget(net.minecraft.world.phys.BlockHitResult);
+  public static net.minecraft.world.entity.Entity rayTraceEntity(net.minecraft.world.entity.player.Player, double);
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.GunLayerRenderer
+  public net.nekoyuni.SimpleEnemyMod.entity.client.GunLayerRenderer(net.minecraft.client.renderer.entity.RenderLayerParent<T, M>, net.minecraft.client.renderer.ItemInHandRenderer);
+  public void render(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int, T, float, float, float, float, float, float);
+  public void render(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int, net.minecraft.world.entity.Entity, float, float, float, float, float, float);
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.util.UniversalArmorLayer
+  public net.nekoyuni.SimpleEnemyMod.entity.client.util.UniversalArmorLayer(net.minecraft.client.renderer.entity.RenderLayerParent<T, M>, net.minecraft.client.model.HumanoidModel<?>, net.minecraft.client.model.HumanoidModel<?>);
+  public void render(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int, T, float, float, float, float, float, float);
+  public void render(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int, net.minecraft.world.entity.Entity, float, float, float, float, float, float);
+
+class net.nekoyuni.SimpleEnemyMod.compat.geckolib.internal.GeckoArmorLayerImpl
+  public static <T extends net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit, M extends net.minecraft.client.model.EntityModel<T>> net.minecraft.client.renderer.entity.layers.RenderLayer<T, M> create(net.minecraft.client.renderer.entity.RenderLayerParent<T, M>, net.minecraft.client.model.HumanoidModel<?>);
+  public void render(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int, T, float, float, float, float, float, float);
+  public net.minecraft.resources.ResourceLocation getArmorResource(net.minecraft.world.entity.Entity, net.minecraft.world.item.ItemStack, net.minecraft.world.entity.EquipmentSlot, java.lang.String);
+  public void render(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int, net.minecraft.world.entity.Entity, float, float, float, float, float, float);
+
+class net.nekoyuni.SimpleEnemyMod.compat.geckolib.internal.GeckoArmorAdjuster
+  public net.nekoyuni.SimpleEnemyMod.compat.geckolib.internal.GeckoArmorAdjuster();
+  public static void applyAdjustments(software.bernie.geckolib.renderer.GeoArmorRenderer<?>, net.minecraft.client.model.HumanoidModel<?>, net.minecraft.world.entity.EquipmentSlot);
+
+class net.nekoyuni.SimpleEnemyMod.compat.geckolib.GeckoCompat
+  public static final boolean LOADED;
+  public net.nekoyuni.SimpleEnemyMod.compat.geckolib.GeckoCompat();
+
+class net.nekoyuni.SimpleEnemyMod.compat.geckolib.GeckoCompatClient
+  public net.nekoyuni.SimpleEnemyMod.compat.geckolib.GeckoCompatClient();
+  public static <T extends net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit, M extends net.minecraft.client.model.EntityModel<T>> net.minecraft.client.renderer.entity.layers.RenderLayer<T, M> createArmorLayer(net.minecraft.client.renderer.entity.RenderLayerParent<T, M>, net.minecraft.client.model.HumanoidModel<?>);
+  public static boolean isGeckoArmor(net.minecraft.world.item.ItemStack);
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.util.UnitModelDefinitions
+  public net.nekoyuni.SimpleEnemyMod.entity.client.util.UnitModelDefinitions();
+  public static net.minecraft.client.model.geom.builders.LayerDefinition createBaseUnitBodyLayer();
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.util.IArmorBoneProvider
+  public abstract net.minecraft.client.model.geom.ModelPart getUnit();
+  public abstract net.minecraft.client.model.geom.ModelPart getHead();
+  public abstract net.minecraft.client.model.geom.ModelPart getBody();
+  public abstract net.minecraft.client.model.geom.ModelPart getRightArm();
+  public abstract net.minecraft.client.model.geom.ModelPart getLeftArm();
+  public abstract net.minecraft.client.model.geom.ModelPart getRightLeg();
+  public abstract net.minecraft.client.model.geom.ModelPart getLeftLeg();
+  public abstract void translateToBody(com.mojang.blaze3d.vertex.PoseStack);
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.animation.config.UnitAnimationConfig
+  public net.nekoyuni.SimpleEnemyMod.entity.client.animation.config.UnitAnimationConfig();
+  public static net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.LayeredAnimationManager create(net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit, net.minecraft.client.model.geom.ModelPart, net.minecraft.client.model.geom.ModelPart, net.minecraft.client.model.geom.ModelPart);
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.LayeredAnimationManager
+  public void update(net.minecraft.world.entity.Entity, int);
+  public void applyProceduralLayers(net.minecraft.client.model.geom.ModelPart, net.minecraft.world.entity.Entity, float);
+  public void reset();
+  public boolean isPlaying(java.lang.String);
+  public net.nekoyuni.SimpleEnemyMod.entity.client.animation.layer.IAnimationLayer getCurrentActiveLayer();
+  public java.util.List<net.nekoyuni.SimpleEnemyMod.entity.client.animation.layer.IAnimationLayer> getAllAnimationLayers();
+  public java.util.List<net.nekoyuni.SimpleEnemyMod.entity.client.animation.procedural.IProceduralLayer> getAllProceduralLayers();
+  public void setDebugMode(boolean);
+  public static net.nekoyuni.SimpleEnemyMod.entity.client.animation.core.LayeredAnimationManager$Builder builder();
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.animation.ModAnimationsDefinitions
+  public static final net.minecraft.client.animation.AnimationDefinition UNIT_WALK;
+  public static final net.minecraft.client.animation.AnimationDefinition UNIT_IDLE;
+  public static final net.minecraft.client.animation.AnimationDefinition UNIT_HURT;
+  public static final net.minecraft.client.animation.AnimationDefinition UNIT_HURT_1;
+  public static final net.minecraft.client.animation.AnimationDefinition UNIT_DEATH;
+  public static final net.minecraft.client.animation.AnimationDefinition UNIT_DEATH_BACK;
+  public static final net.minecraft.client.animation.AnimationDefinition[] UNIT_HURT_VARIANTS;
+  public net.nekoyuni.SimpleEnemyMod.entity.client.animation.ModAnimationsDefinitions();
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.pmc_unit.PmcUnitRenderer
+  public net.nekoyuni.SimpleEnemyMod.entity.client.pmc_unit.PmcUnitRenderer(net.minecraft.client.renderer.entity.EntityRendererProvider$Context);
+  public net.minecraft.resources.ResourceLocation getTextureLocation(net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity);
+  public boolean shouldRender(net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity, net.minecraft.client.renderer.culling.Frustum, double, double, double);
+  protected void setupRotations(net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity, com.mojang.blaze3d.vertex.PoseStack, float, float, float, float);
+  public void render(net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  protected void setupRotations(net.minecraft.world.entity.LivingEntity, com.mojang.blaze3d.vertex.PoseStack, float, float, float, float);
+  public void render(net.minecraft.world.entity.LivingEntity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public net.minecraft.resources.ResourceLocation getTextureLocation(net.minecraft.world.entity.Entity);
+  public void render(net.minecraft.world.entity.Entity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public boolean shouldRender(net.minecraft.world.entity.Entity, net.minecraft.client.renderer.culling.Frustum, double, double, double);
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.ru_unit.RUunitRenderer
+  public net.nekoyuni.SimpleEnemyMod.entity.client.ru_unit.RUunitRenderer(net.minecraft.client.renderer.entity.EntityRendererProvider$Context);
+  public net.minecraft.resources.ResourceLocation getTextureLocation(net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity);
+  public boolean shouldRender(net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity, net.minecraft.client.renderer.culling.Frustum, double, double, double);
+  protected void setupRotations(net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity, com.mojang.blaze3d.vertex.PoseStack, float, float, float, float);
+  public void render(net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  protected void setupRotations(net.minecraft.world.entity.LivingEntity, com.mojang.blaze3d.vertex.PoseStack, float, float, float, float);
+  public void render(net.minecraft.world.entity.LivingEntity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public net.minecraft.resources.ResourceLocation getTextureLocation(net.minecraft.world.entity.Entity);
+  public void render(net.minecraft.world.entity.Entity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public boolean shouldRender(net.minecraft.world.entity.Entity, net.minecraft.client.renderer.culling.Frustum, double, double, double);
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.us_unit.USunitRenderer
+  public net.nekoyuni.SimpleEnemyMod.entity.client.us_unit.USunitRenderer(net.minecraft.client.renderer.entity.EntityRendererProvider$Context);
+  public net.minecraft.resources.ResourceLocation getTextureLocation(net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity);
+  public boolean shouldRender(net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity, net.minecraft.client.renderer.culling.Frustum, double, double, double);
+  protected void setupRotations(net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity, com.mojang.blaze3d.vertex.PoseStack, float, float, float, float);
+  public void render(net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  protected void setupRotations(net.minecraft.world.entity.LivingEntity, com.mojang.blaze3d.vertex.PoseStack, float, float, float, float);
+  public void render(net.minecraft.world.entity.LivingEntity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public net.minecraft.resources.ResourceLocation getTextureLocation(net.minecraft.world.entity.Entity);
+  public void render(net.minecraft.world.entity.Entity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public boolean shouldRender(net.minecraft.world.entity.Entity, net.minecraft.client.renderer.culling.Frustum, double, double, double);
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.pmc_unit.PmcUnitModel
+  private final net.minecraft.client.model.geom.ModelPart unit;
+  public net.nekoyuni.SimpleEnemyMod.entity.client.pmc_unit.PmcUnitModel(net.minecraft.client.model.geom.ModelPart);
+  public void translateToBody(com.mojang.blaze3d.vertex.PoseStack);
+  public static net.minecraft.client.model.geom.builders.LayerDefinition createBodyLayer();
+  public void setupAnim(T, float, float, float, float, float);
+  public void renderToBuffer(com.mojang.blaze3d.vertex.PoseStack, com.mojang.blaze3d.vertex.VertexConsumer, int, int, int);
+  public net.minecraft.client.model.geom.ModelPart root();
+  public net.minecraft.client.model.geom.ModelPart getUnit();
+  public net.minecraft.client.model.geom.ModelPart getHead();
+  public net.minecraft.client.model.geom.ModelPart getBody();
+  public net.minecraft.client.model.geom.ModelPart getRightArm();
+  public net.minecraft.client.model.geom.ModelPart getLeftArm();
+  public net.minecraft.client.model.geom.ModelPart getRightLeg();
+  public net.minecraft.client.model.geom.ModelPart getLeftLeg();
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.ru_unit.RUunitModel
+  private final net.minecraft.client.model.geom.ModelPart unit;
+  public net.nekoyuni.SimpleEnemyMod.entity.client.ru_unit.RUunitModel(net.minecraft.client.model.geom.ModelPart);
+  public static net.minecraft.client.model.geom.builders.LayerDefinition createBodyLayer();
+  public void setupAnim(T, float, float, float, float, float);
+  public void renderToBuffer(com.mojang.blaze3d.vertex.PoseStack, com.mojang.blaze3d.vertex.VertexConsumer, int, int, int);
+  public net.minecraft.client.model.geom.ModelPart root();
+
+class net.nekoyuni.SimpleEnemyMod.entity.client.us_unit.USunitModel
+  private final net.minecraft.client.model.geom.ModelPart unit;
+  public net.nekoyuni.SimpleEnemyMod.entity.client.us_unit.USunitModel(net.minecraft.client.model.geom.ModelPart);
+  public static net.minecraft.client.model.geom.builders.LayerDefinition createBodyLayer();
+  public void setupAnim(T, float, float, float, float, float);
+  public void renderToBuffer(com.mojang.blaze3d.vertex.PoseStack, com.mojang.blaze3d.vertex.VertexConsumer, int, int, int);
+  public net.minecraft.client.model.geom.ModelPart root();
+
+class net.nekoyuni.SimpleEnemyMod.registry.ModEntities
+  public static final net.neoforged.neoforge.registries.DeferredRegister<net.minecraft.world.entity.EntityType<?>> ENTITY_TYPES;
+  public static final net.neoforged.neoforge.registries.DeferredHolder<net.minecraft.world.entity.EntityType<?>, net.minecraft.world.entity.EntityType<net.nekoyuni.SimpleEnemyMod.entity.unit.USunitEntity>> USUNIT;
+  public static final net.neoforged.neoforge.registries.DeferredHolder<net.minecraft.world.entity.EntityType<?>, net.minecraft.world.entity.EntityType<net.nekoyuni.SimpleEnemyMod.entity.unit.RUunitEntity>> RUUNIT;
+  public static final net.neoforged.neoforge.registries.DeferredHolder<net.minecraft.world.entity.EntityType<?>, net.minecraft.world.entity.EntityType<net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity>> PMCUNIT;
+  public net.nekoyuni.SimpleEnemyMod.registry.ModEntities();
+  public static void register(net.neoforged.bus.api.IEventBus);
+
+class net.nekoyuni.SimpleEnemyMod.config.ClientConfig
+  public static final net.neoforged.neoforge.common.ModConfigSpec SPEC;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue RENDER_DISTANCE;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue RENDER_MUZZLE_FLASH;
+  public net.nekoyuni.SimpleEnemyMod.config.ClientConfig();
+
+class net.nekoyuni.SimpleEnemyMod.config.common.FactionsConfig
+  public static net.neoforged.neoforge.common.ModConfigSpec$ConfigValue<java.lang.Boolean> RU_UNITS_FRIENDLY;
+  public static net.neoforged.neoforge.common.ModConfigSpec$ConfigValue<java.lang.Boolean> US_UNITS_FRIENDLY;
+  public net.nekoyuni.SimpleEnemyMod.config.common.FactionsConfig();
+  public static void init(net.neoforged.neoforge.common.ModConfigSpec$Builder);
+
+class net.nekoyuni.SimpleEnemyMod.config.common.TacticalAiConfig
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_SOFT_OBSTACLE_BREAKING;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_LADDER_FALLBACK;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_PRECISE_FOLIAGE_LOS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_HAZARDOUS_COVER_REJECTION;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue AI_LOS_CACHE_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_SMART_COVER_SEARCH;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_COVER_PATH_VALIDATION;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_FALLBACK_EVASION;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue COVER_SEARCH_COOLDOWN_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue COVER_RELAXED_EXTRA_RADIUS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue FALLBACK_EVASION_RADIUS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue COVER_SEARCH_MAX_CANDIDATES;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue COVER_SEARCH_MAX_PATH_CHECKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue COVER_SEARCHES_PER_TICK;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue COVER_SEARCH_BUDGET_JITTER_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_TACTICAL_SUPPRESSION;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SUPPRESSION_IMPACT_RADIUS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SUPPRESSION_IMPACT_AMOUNT;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SUPPRESSION_DECAY_PER_TICK;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SUPPRESSION_STRONG_THRESHOLD;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SUPPRESSION_ACCURACY_SPREAD_PENALTY;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue SUPPRESSION_COVER_LOCK_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue SUPPRESSION_SOURCE_DEBOUNCE_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_TACTICAL_HEARING;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue GUNSHOT_HEARING_RADIUS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SOUND_MIN_STRENGTH;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue GUNSHOT_MEMORY_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SOUND_INVESTIGATE_SPEED;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SOUND_INVESTIGATE_REACHED_DISTANCE;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_TACTICAL_DECISION_LAYER;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue TACTICAL_DECISION_INTERVAL_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue TACTICAL_DECISION_COVER_LOCK_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue TACTICAL_RETREAT_PRESSURE_THRESHOLD;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue TACTICAL_COVER_PRESSURE_THRESHOLD;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue TACTICAL_PUSH_CONFIDENCE_THRESHOLD;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_SQUAD_CONTEXT;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_SQUAD_COMBAT_MEMORY;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SQUAD_CONTEXT_RADIUS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SQUAD_MEMORY_SHARE_RADIUS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue SQUAD_MEMORY_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue SQUAD_MEMORY_GRID_SIZE;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_DISTANCE_TARGET_PRIORITY;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue CLOSE_THREAT_SWITCH_DISTANCE;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue CLOSE_THREAT_SWITCH_RATIO;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue CLOSE_THREAT_SWITCH_SCAN_INTERVAL_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_SEM_LOOP_SPARK_PROFILING;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue SEM_LOOP_SPARK_WARMUP_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_SEM_TICK_PROFILER;
+  public static net.neoforged.neoforge.common.ModConfigSpec$BooleanValue ENABLE_SEM_TICK_SAMPLES;
+  public static net.neoforged.neoforge.common.ModConfigSpec$IntValue SEM_TICK_SAMPLE_INTERVAL_TICKS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SEM_TICK_WARN_THRESHOLD_MS;
+  public static net.neoforged.neoforge.common.ModConfigSpec$DoubleValue SEM_TICK_SEVERE_THRESHOLD_MS;
+  public net.nekoyuni.SimpleEnemyMod.config.common.TacticalAiConfig();
+  public static void init(net.neoforged.neoforge.common.ModConfigSpec$Builder);
+  public static boolean enableSoftObstacleBreaking();
+  public static boolean enableLadderFallback();
+  public static boolean enablePreciseFoliageLos();
+  public static boolean enableHazardousCoverRejection();
+  public static int aiLosCacheTicks();
+  public static boolean enableSmartCoverSearch();
+  public static boolean enableCoverPathValidation();
+  public static boolean enableFallbackEvasion();
+  public static int coverSearchCooldownTicks();
+  public static int coverRelaxedExtraRadius();
+  public static int fallbackEvasionRadius();
+  public static int coverSearchMaxCandidates();
+  public static int coverSearchMaxPathChecks();
+  public static int coverSearchesPerTick();
+  public static int coverSearchBudgetJitterTicks();
+  public static boolean enableTacticalSuppression();
+  public static double suppressionImpactRadius();
+  public static double suppressionImpactAmount();
+  public static double suppressionDecayPerTick();
+  public static double suppressionStrongThreshold();
+  public static double suppressionAccuracySpreadPenalty();
+  public static int suppressionCoverLockTicks();
+  public static int suppressionSourceDebounceTicks();
+  public static boolean enableTacticalHearing();
+  public static double gunshotHearingRadius();
+  public static double soundMinStrength();
+  public static int gunshotMemoryTicks();
+  public static double soundInvestigateSpeed();
+  public static double soundInvestigateReachedDistance();
+  public static boolean enableTacticalDecisionLayer();
+  public static int tacticalDecisionIntervalTicks();
+  public static int tacticalDecisionCoverLockTicks();
+  public static double tacticalRetreatPressureThreshold();
+  public static double tacticalCoverPressureThreshold();
+  public static double tacticalPushConfidenceThreshold();
+  public static boolean enableSquadContext();
+  public static boolean enableSquadCombatMemory();
+  public static double squadContextRadius();
+  public static double squadMemoryShareRadius();
+  public static int squadMemoryTicks();
+  public static int squadMemoryGridSize();
+  public static boolean enableDistanceTargetPriority();
+  public static double closeThreatSwitchDistance();
+  public static double closeThreatSwitchRatio();
+  public static int closeThreatSwitchScanIntervalTicks();
+  public static boolean enableSemLoopSparkProfiling();
+  public static int semLoopSparkWarmupTicks();
+  public static boolean enableSemTickProfiler();
+  public static boolean enableSemTickSamples();
+  public static int semTickSampleIntervalTicks();
+  public static double semTickWarnThresholdMs();
+  public static double semTickSevereThresholdMs();
+
+class net.nekoyuni.SimpleEnemyMod.config.CommonConfig
+  public static final net.neoforged.neoforge.common.ModConfigSpec SPEC;
+  public net.nekoyuni.SimpleEnemyMod.config.CommonConfig();
+
