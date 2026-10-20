@@ -2,12 +2,9 @@ package net.nekoyuni.SimpleEnemyMod.entity.ai.goals;
 
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
-import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
-import com.tacz.guns.api.TimelessAPI;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,8 +18,6 @@ import net.nekoyuni.SimpleEnemyMod.entity.ai.awareness.CombatSoundAwarenessManag
 import net.nekoyuni.SimpleEnemyMod.entity.ai.suppression.CombatSuppressionManager;
 import net.nekoyuni.SimpleEnemyMod.config.common.TacticalAiConfig;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
-import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
-import net.nekoyuni.SimpleEnemyMod.inventory.PmcInventorySlots;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.EnumSet;
@@ -437,16 +432,10 @@ public class RangedGunAttackGoal extends Goal {
                 break;
 
             case NO_AMMO:
-    if (this.mob instanceof PmcUnitEntity) {
-        if (attemptReloadFromInventory(operator, gunStack)) {
-            info(ANSI_YELLOW + "[AI AttackGoal] Reloaded from Pmc reserve." + ANSI_RESET);
-        }
-    } else {
-        info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Out of ammo. Starting reload." + ANSI_RESET);
-        operator.reload();
-        resetGoalStates();
-    }
-    break;
+                info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Out of burst ammo. Starting reload." + ANSI_RESET);
+                operator.reload();
+                resetGoalStates();
+                break;
 
             case NOT_DRAW:
                 info(ANSI_YELLOW + "[AI AttackGoal] BURST_FIRING: Weapon not drawn. Starting draw" + ANSI_RESET);
@@ -474,69 +463,6 @@ public class RangedGunAttackGoal extends Goal {
         }
     }
 
-    private boolean attemptReloadFromInventory(IGunOperator operator, ItemStack gunStack) {
-        if (!(this.mob instanceof PmcUnitEntity pmcUnit)) {
-            return false;
-        }
-
-        IGun iGun = IGun.getIGunOrNull(gunStack);
-        if (iGun == null) {
-            return false;
-        }
-
-        ResourceLocation gunId = iGun.getGunId(gunStack);
-
-        var gunDataOpt = TimelessAPI.getCommonGunIndex(gunId);
-        if (gunDataOpt.isEmpty()) {
-            return false;
-        }
-
-        ResourceLocation requiredAmmoId = gunDataOpt.get().getGunData().getAmmoId();
-        int magazineCapacity = gunDataOpt.get().getGunData().getAmmoAmount();
-        int currentAmmo = iGun.getCurrentAmmoCount(gunStack);
-
-        int neededAmmo = magazineCapacity - currentAmmo;
-        if (neededAmmo <= 0) {
-            return false;
-        }
-
-        int totalTransferred = 0;
-
-        for (int slot : PmcInventorySlots.AMMO_SLOTS) {
-            if (neededAmmo <= 0) break;
-
-            ItemStack candidate = pmcUnit.getInventory().getStackInSlot(slot);
-            if (candidate.isEmpty()) continue;
-
-            // Only consume stacks that are actually the correct ammo type for this gun.
-            IAmmo iAmmo = IAmmo.getIAmmoOrNull(candidate);
-            if (iAmmo == null) continue;
-            if (!iAmmo.getAmmoId(candidate).equals(requiredAmmoId)) continue;
-
-            int transferFromThisSlot = Math.min(neededAmmo, candidate.getCount());
-
-            candidate.shrink(transferFromThisSlot);
-            pmcUnit.getInventory().setStackInSlot(slot, candidate);
-
-            neededAmmo -= transferFromThisSlot;
-            totalTransferred += transferFromThisSlot;
-
-            LOGGER.info("Pulled {} rounds from slot {} (remaining in slot: {})",
-                    transferFromThisSlot, slot, candidate.getCount());
-        }
-
-        if (totalTransferred <= 0) {
-            return false;
-        }
-
-        // Reload the existing gun in place preserving NBT.
-        iGun.setCurrentAmmoCount(gunStack, currentAmmo + totalTransferred);
-
-        LOGGER.info("Reload complete. Total transferred: {}. Magazine now: {}",
-                totalTransferred, iGun.getCurrentAmmoCount(gunStack));
-
-        return true;
-    }
 
 
     private boolean getCachedRoughLineOfSight(LivingEntity pTarget) {

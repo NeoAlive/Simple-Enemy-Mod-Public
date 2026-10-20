@@ -18,11 +18,14 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.FastColor;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.nekoyuni.SimpleEnemyMod.compat.geckolib.GeckoCompat;
 import net.nekoyuni.SimpleEnemyMod.compat.geckolib.GeckoCompatClient;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.AbstractUnit;
+
+import java.util.List;
 
 
 public class UniversalArmorLayer<T extends AbstractUnit, M extends EntityModel<T> & IArmorBoneProvider>
@@ -124,8 +127,7 @@ public class UniversalArmorLayer<T extends AbstractUnit, M extends EntityModel<T
         applyManualPosition(armorModel, slot);
 
         boolean hasGlint = itemStack.hasFoil();
-        DyedItemColor dyedColor = itemStack.get(DataComponents.DYED_COLOR);
-        boolean isDyeable = dyedColor != null;
+        boolean isDyeable = itemStack.is(ItemTags.DYEABLE);
         ResourceLocation texture = getArmorTexture(entity, itemStack, slot, armorItem);
 
         if (texture == null) return;
@@ -255,13 +257,23 @@ public class UniversalArmorLayer<T extends AbstractUnit, M extends EntityModel<T
     }
 
     private ResourceLocation getArmorTexture(T entity, ItemStack stack, EquipmentSlot slot, ArmorItem armorItem) {
-        boolean inner = slot == EquipmentSlot.LEGS;
-        ArmorMaterial.Layer layer = armorItem.getMaterial().value().layers().getFirst();
-        return ClientHooks.getArmorTexture(entity, stack, layer, inner, slot);
+        // 1.21: textures come from the material's layers; layer 0 is the base texture
+        List<ArmorMaterial.Layer> layers = armorItem.getMaterial().value().layers();
+        if (layers.isEmpty()) {
+            return null;
+        }
+
+        return ClientHooks.getArmorTexture(entity, stack, layers.get(0), slot == EquipmentSlot.LEGS, slot);
     }
 
     private ResourceLocation getArmorOverlayTexture(T entity, ItemStack stack, EquipmentSlot slot, ArmorItem armorItem) {
-        return null;
+        // 1.21: the "overlay" texture of dyeable armor is the material's second layer
+        List<ArmorMaterial.Layer> layers = armorItem.getMaterial().value().layers();
+        if (layers.size() < 2) {
+            return null;
+        }
+
+        return ClientHooks.getArmorTexture(entity, stack, layers.get(1), slot == EquipmentSlot.LEGS, slot);
     }
 
     private void renderArmorModel(PoseStack poseStack, MultiBufferSource buffer, int packedLight, boolean hasGlint,
@@ -273,12 +285,10 @@ public class UniversalArmorLayer<T extends AbstractUnit, M extends EntityModel<T
                 hasGlint
         );
 
-        float r = 1.0F, g = 1.0F, b = 1.0F;
         int tint = -1;
 
-        DyedItemColor dyed = stack.get(DataComponents.DYED_COLOR);
-        if (isDyeable && dyed != null) {
-            tint = dyed.rgb();
+        if (isDyeable) {
+            tint = FastColor.ARGB32.opaque(DyedItemColor.getOrDefault(stack, DyedItemColor.LEATHER_COLOR));
         }
 
         model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, tint);

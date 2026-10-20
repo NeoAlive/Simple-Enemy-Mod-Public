@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
@@ -240,13 +240,15 @@ public class GeckoArmorLayerImpl<T extends AbstractUnit, M extends EntityModel<T
     }
 
     public ResourceLocation getArmorResource(Entity entity, ItemStack stack, EquipmentSlot slot, String type) {
-        if (!(stack.getItem() instanceof ArmorItem armorItem)) {
-            return ResourceLocation.withDefaultNamespace("textures/models/armor/leather_layer_1.png");
-        }
 
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
         boolean inner = slot == EquipmentSlot.LEGS;
-        ArmorMaterial.Layer layer = armorItem.getMaterial().value().layers().getFirst();
-        return ClientHooks.getArmorTexture(entity, stack, layer, inner, slot);
+
+        // 1.21 equivalent of upstream's "<ns>:textures/models/armor/<path>_layer_N[_type].png" default,
+        // still routed through the item's own armor-texture hook
+        ArmorMaterial.Layer defaultLayer = new ArmorMaterial.Layer(itemId, type == null ? "" : "_" + type, false);
+
+        return ClientHooks.getArmorTexture(entity, stack, defaultLayer, inner, slot);
     }
 
     // VANILLA METHOD

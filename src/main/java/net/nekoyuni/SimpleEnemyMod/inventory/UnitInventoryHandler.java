@@ -10,7 +10,7 @@ public class UnitInventoryHandler extends ItemStackHandler {
     private final PmcUnitEntity unit;
 
     public UnitInventoryHandler(PmcUnitEntity unit) {
-        super(18);
+        super(18); // 18
         this.unit = unit;
     }
 
@@ -30,12 +30,14 @@ public class UnitInventoryHandler extends ItemStackHandler {
                     }
                 }
             }
-            // Slot 1 is reserved for ammo storage in inventory and does not sync to equipment
+            case 1 -> unit.setItemSlot(EquipmentSlot.OFFHAND, stack);
             case 2 -> unit.setItemSlot(EquipmentSlot.FEET, stack);
             case 3 -> unit.setItemSlot(EquipmentSlot.LEGS, stack);
             case 4 -> unit.setItemSlot(EquipmentSlot.CHEST, stack);
             case 5 -> unit.setItemSlot(EquipmentSlot.HEAD, stack);
+
         }
+
     }
 
     @Override

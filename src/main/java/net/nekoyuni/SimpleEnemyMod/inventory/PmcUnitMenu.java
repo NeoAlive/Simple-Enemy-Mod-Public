@@ -11,15 +11,26 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import java.util.Optional;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.nekoyuni.SimpleEnemyMod.compat.curios.CuriosCompat;
 import net.nekoyuni.SimpleEnemyMod.compat.curios.CuriosHelper;
 import net.nekoyuni.SimpleEnemyMod.entity.unit.PmcUnitEntity;
 import net.nekoyuni.SimpleEnemyMod.registry.ModMenuTypes;
+import top.theillusivec4.curios.api.CuriosApi;
 
 public class PmcUnitMenu extends AbstractContainerMenu {
 
     public final PmcUnitEntity unit;
+    private final net.minecraft.world.level.Level level;
+
+    private static final ResourceLocation[] ARMOR_SLOT_TEXTURES = new ResourceLocation[]{
+            InventoryMenu.BLOCK_ATLAS,
+            InventoryMenu.BLOCK_ATLAS,
+            InventoryMenu.BLOCK_ATLAS,
+            InventoryMenu.BLOCK_ATLAS
+    };
 
     private static final ResourceLocation[] ARMOR_SLOT_ICONS = new ResourceLocation[]{
             ResourceLocation.fromNamespaceAndPath("minecraft", "item/empty_armor_slot_boots"),
@@ -37,60 +48,72 @@ public class PmcUnitMenu extends AbstractContainerMenu {
 
         checkContainerSize(inv, 18);
         this.unit = entity;
+        this.level = inv.player.level();
 
-        if (unit == null) {
-            return;
-        }
+        if (unit == null) return;
 
-        var handler = unit.getInventory();
+        Optional.ofNullable(unit.getCapability(Capabilities.ItemHandler.ENTITY, null)).ifPresent(handler -> {
 
-        int[] armorSlotIds = {5, 4, 3, 2};
-        EquipmentSlot[] armorTypes = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+            int[] armorSlotIds = {5, 4, 3, 2};
+            EquipmentSlot[] armorTypes = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
-        for (int i = 0; i < 4; i++) {
-            final EquipmentSlot slotType = armorTypes[i];
-            final int slotId = armorSlotIds[i];
-            final int iconIndex = 3 - i;
+            for (int i = 0; i < 4; i++) {
 
-            this.addSlot(new SlotItemHandler(handler, slotId, 8, 19 + (i * 18)) {
+                final EquipmentSlot slotType = armorTypes[i];
+                final int slotId = armorSlotIds[i];
+                final int iconIndex = 3 - i;
+
+                this.addSlot(new SlotItemHandler(handler, slotId, 8, 19 + (i * 18)) {
+                    @Override
+                    public boolean mayPlace(ItemStack stack) {
+                        return stack.canEquip(slotType, unit);
+                    }
+
+                    @Override
+                    public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                        return Pair.of(ARMOR_SLOT_TEXTURES[iconIndex], ARMOR_SLOT_ICONS[iconIndex]);
+                    }
+                });
+            }
+
+            // MAIN HAND
+            this.addSlot(new SlotItemHandler(handler, 0, 90, 37) {
+                @Override
+                public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                    return Pair.of(InventoryMenu.BLOCK_ATLAS,
+                            ResourceLocation.fromNamespaceAndPath("minecraft", "item/empty_slot_sword"));
+                }
+            });
+
+            // OFFHAND
+            this.addSlot(new SlotItemHandler(handler, 1, 90, 55) {
+
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return stack.canEquip(slotType, unit);
+                    return stack.getItem() instanceof AbstractGunItem;
                 }
 
                 @Override
                 public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                    return Pair.of(InventoryMenu.BLOCK_ATLAS, ARMOR_SLOT_ICONS[iconIndex]);
+                    return Pair.of(InventoryMenu.BLOCK_ATLAS,
+                            ResourceLocation.fromNamespaceAndPath("minecraft", "item/empty_slot_shovel"));
                 }
             });
-        }
 
-        this.addSlot(new SlotItemHandler(handler, 0, 90, 37) {
-            @Override
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS,
-                        ResourceLocation.fromNamespaceAndPath("minecraft", "item/empty_slot_sword"));
+
+            // UNIT INVENTORY
+            int startX = 116;
+            int startY = 19;
+
+            for (int row = 0; row < 4; row++) {
+                for (int col = 0; col < 3; col++) {
+                    this.addSlot(new SlotItemHandler(handler, 6 + col + (row * 3),
+                            startX + col * 18, startY + row * 18));
+                }
             }
         });
 
-        this.addSlot(new SlotItemHandler(handler, 1, 90, 55) {
-            @Override
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS,
-                        ResourceLocation.fromNamespaceAndPath("minecraft", "item/empty_slot_shovel"));
-            }
-        });
-
-        int startX = 116;
-        int startY = 19;
-
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 3; col++) {
-                this.addSlot(new SlotItemHandler(handler, 6 + col + (row * 3),
-                        startX + col * 18, startY + row * 18));
-            }
-        }
-
+        // CURIOS COMPATIBILITY
         if (CuriosCompat.LOADED) {
             CuriosHelper.addCuriosSlots(this::addSlot, this.unit);
         }
@@ -113,6 +136,7 @@ public class PmcUnitMenu extends AbstractContainerMenu {
         }
     }
 
+    // QUICK MOVE
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack resultStack = ItemStack.EMPTY;
@@ -125,15 +149,26 @@ public class PmcUnitMenu extends AbstractContainerMenu {
         ItemStack sourceStack = sourceSlot.getItem();
         resultStack = sourceStack.copy();
 
-        int playerInvSize = 36;
-        int unitSlotsEnd = this.slots.size() - playerInvSize;
+        /*
+        int unitSlotsEnd = 18;
+        int playerInvStart = 18;
+        int playerInvEnd = 54;
+         */
+
+        // CURIOUS DEPENDECY
+        int playerInvSize = 36; // 27 del inventario + 9 de la hotbar
+        int unitSlotsEnd = this.slots.size() - playerInvSize; // Se ajusta solo si Curios añade slots
         int playerInvStart = unitSlotsEnd;
         int playerInvEnd = this.slots.size();
 
+
+
         if (index < unitSlotsEnd) {
+
             if (!this.moveItemStackTo(sourceStack, playerInvStart, playerInvEnd, true)) {
                 return ItemStack.EMPTY;
             }
+
         } else {
             if (!this.moveItemStackTo(sourceStack, 0, unitSlotsEnd, false)) {
                 return ItemStack.EMPTY;
